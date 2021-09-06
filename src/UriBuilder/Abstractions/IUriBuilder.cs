@@ -1,6 +1,6 @@
 namespace UriBuilder.Abstractions
 {
-    public interface ILinkBuilder
+    public interface IUriBuilder
     {
         IPath SetDomain(string value);
     }

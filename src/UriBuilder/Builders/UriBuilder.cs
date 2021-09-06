@@ -6,22 +6,22 @@ using UriBuilder.Internals;
 
 namespace UriBuilder.Builders
 {
-    public class UrlBuilder : IPath, IQueryParam, ILinkBuilder, IGenerate
+    public class UriBuilder : IPath, IQueryParam, IUriBuilder, IGenerate
     {
         private readonly List<PathItem> _pathItems;
         private readonly List<QueryParamItem> _queryParams;
         private string _domain;
         private bool _encodingNeeded;
 
-        private UrlBuilder()
+        private UriBuilder()
         {
             _pathItems = new List<PathItem>();
             _queryParams = new List<QueryParamItem>();
         }
 
-        public static ILinkBuilder NewUrl()
+        public static IUriBuilder NewUrl()
         {
-            return new UrlBuilder();
+            return new UriBuilder();
         }
 
         public IPath SetDomain(string domain)
@@ -38,7 +38,7 @@ namespace UriBuilder.Builders
 
         public IQueryParam SetQueryParam(string name, params string[] values)
         {
-            _queryParams.Add(new QueryParamItem { Name = name, Value = UrlExtension.Join(values) });
+            _queryParams.Add(new QueryParamItem { Name = name, Value = Uri.Join(values) });
             return this;
         }
 
@@ -50,18 +50,18 @@ namespace UriBuilder.Builders
 
         public string Generate()
         {
-            var relativeUri = UrlExtension.GenerateRelativeUri(_pathItems, _queryParams);
+            var relativeUri = Uri.GenerateRelativeUri(_pathItems, _queryParams);
 
-            if (UrlExtension.IsNotWellFormedRelativeUriString(relativeUri))
+            if (Uri.IsNotWellFormedRelativeUriString(relativeUri))
                 throw new RelativeUrlException("relative url is not correct");
 
-            if (UrlExtension.IsNotWellFormedAbsoluteUriString(_domain))
+            if (Uri.IsNotWellFormedAbsoluteUriString(_domain))
                 throw new AbsoluteUrlException($"{_domain} is not correct");
 
             if (_encodingNeeded)
-                relativeUri = UrlExtension.UrlEncode(relativeUri);
+                relativeUri = Uri.UrlEncode(relativeUri);
             
-            return UrlExtension.GenerateUri(_domain, relativeUri);
+            return Uri.GenerateUri(_domain, relativeUri);
         }
     }
 }

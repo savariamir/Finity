@@ -6,7 +6,7 @@ using System.Web;
 
 namespace UriBuilder.Internals
 {
-    internal static class UrlExtension
+    internal static class Uri
     {
         private const char QuestionMark = '?';
         private const char ForwardSlash = '/';
@@ -16,12 +16,12 @@ namespace UriBuilder.Internals
 
         internal static bool IsNotWellFormedRelativeUriString(string relativeUri)
         {
-            return !Uri.IsWellFormedUriString(relativeUri, UriKind.Relative);
+            return !System.Uri.IsWellFormedUriString(relativeUri, UriKind.Relative);
         }
         
         internal static bool IsNotWellFormedAbsoluteUriString(string absolute)
         {
-            return !Uri.IsWellFormedUriString(absolute, UriKind.Relative);
+            return !System.Uri.IsWellFormedUriString(absolute, UriKind.Relative);
         }
 
         internal static string UrlEncode(string text)
