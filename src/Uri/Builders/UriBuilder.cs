@@ -55,7 +55,7 @@ namespace Uri.Builders
             if (Internals.Uri.IsNotWellFormedRelativeUriString(relativeUri))
                 throw new RelativeUrlException("relative url is not correct");
 
-            if (Internals.Uri.IsNotWellFormedAbsoluteUriString(_domain))
+            if (!Internals.Uri.IsValidUrl(_domain))
                 throw new AbsoluteUrlException($"{_domain} is not correct");
 
             if (_encodingNeeded)

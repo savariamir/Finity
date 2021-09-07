@@ -21,7 +21,16 @@ namespace Uri.Internals
 
         internal static bool IsNotWellFormedAbsoluteUriString(string absolute)
         {
-            return !System.Uri.IsWellFormedUriString(absolute, UriKind.Relative);
+            return !System.Uri.IsWellFormedUriString(absolute, UriKind.RelativeOrAbsolute);
+        }
+
+        internal static bool IsValidUrl(string urlString)
+        {
+            return System.Uri.TryCreate(urlString, UriKind.Absolute, out var uri)
+                   && (uri.Scheme == System.Uri.UriSchemeHttp
+                       || uri.Scheme == System.Uri.UriSchemeHttps
+                       || uri.Scheme == System.Uri.UriSchemeFtp
+                       || uri.Scheme == System.Uri.UriSchemeMailto);
         }
 
         internal static string UrlEncode(string text)
