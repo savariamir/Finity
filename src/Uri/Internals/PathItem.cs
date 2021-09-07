@@ -1,4 +1,4 @@
-namespace UriBuilder.Internals
+namespace Uri.Internals
 {
     internal class PathItem
     {

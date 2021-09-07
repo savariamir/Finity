@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UriBuilder.Abstractions;
-using UriBuilder.Exceptions;
-using UriBuilder.Internals;
+using Uri.Abstractions;
+using Uri.Exceptions;
+using Uri.Internals;
 
-namespace UriBuilder.Builders
+namespace Uri.Builders
 {
     public class UriBuilder : IPath, IQueryParam, IUriBuilder, IGenerate
     {
@@ -38,7 +38,7 @@ namespace UriBuilder.Builders
 
         public IQueryParam SetQueryParam(string name, params string[] values)
         {
-            _queryParams.Add(new QueryParamItem { Name = name, Value = Uri.Join(values) });
+            _queryParams.Add(new QueryParamItem { Name = name, Value = Internals.Uri.Join(values) });
             return this;
         }
 
@@ -50,18 +50,18 @@ namespace UriBuilder.Builders
 
         public string Generate()
         {
-            var relativeUri = Uri.GenerateRelativeUri(_pathItems, _queryParams);
+            var relativeUri = Internals.Uri.GenerateRelativeUri(_pathItems, _queryParams);
 
-            if (Uri.IsNotWellFormedRelativeUriString(relativeUri))
+            if (Internals.Uri.IsNotWellFormedRelativeUriString(relativeUri))
                 throw new RelativeUrlException("relative url is not correct");
 
-            if (Uri.IsNotWellFormedAbsoluteUriString(_domain))
+            if (Internals.Uri.IsNotWellFormedAbsoluteUriString(_domain))
                 throw new AbsoluteUrlException($"{_domain} is not correct");
 
             if (_encodingNeeded)
-                relativeUri = Uri.UrlEncode(relativeUri);
+                relativeUri = Internals.Uri.UrlEncode(relativeUri);
             
-            return Uri.GenerateUri(_domain, relativeUri);
+            return Internals.Uri.GenerateUri(_domain, relativeUri);
         }
     }
 }

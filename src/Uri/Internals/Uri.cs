@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace UriBuilder.Internals
+namespace Uri.Internals
 {
     internal static class Uri
     {
@@ -18,7 +18,7 @@ namespace UriBuilder.Internals
         {
             return !System.Uri.IsWellFormedUriString(relativeUri, UriKind.Relative);
         }
-        
+
         internal static bool IsNotWellFormedAbsoluteUriString(string absolute)
         {
             return !System.Uri.IsWellFormedUriString(absolute, UriKind.Relative);
@@ -38,7 +38,7 @@ namespace UriBuilder.Internals
         {
             return new StringBuilder()
                    .Append(domain)
-                   .Append(ForwardSlash)
+                   // .Append(ForwardSlash)
                    .Append(relativeUri).ToString();
         }
 
@@ -76,8 +76,15 @@ namespace UriBuilder.Internals
 
         private static string GeneratePath(List<PathItem> list)
         {
-            var absolutePath = new StringBuilder();
-            list.ForEach(item => absolutePath.Append(item.Name).Append(ForwardSlash));
+            var absolutePath = new StringBuilder().Append(ForwardSlash);
+            var last = list.Last();
+            list.ForEach(item =>
+            {
+                absolutePath.Append(item.Name);
+
+                if (item != last)
+                    absolutePath.Append(ForwardSlash);
+            });
 
             return absolutePath.ToString();
         }

@@ -1,4 +1,4 @@
-namespace UriBuilder.Abstractions
+namespace Uri.Abstractions
 {
     public interface IUriBuilder
     {

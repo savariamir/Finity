@@ -1,4 +1,4 @@
-namespace UriBuilder.Exceptions
+namespace Uri.Exceptions
 {
     public class AbsoluteUrlException : System.Exception
     {
