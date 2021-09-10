@@ -3,6 +3,7 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Library</OutputType>
+        <RootNamespace>Uri.Tests.Unit</RootNamespace>
     </PropertyGroup>
     
     <ItemGroup>
@@ -18,7 +19,6 @@
     
     <ItemGroup>
       <ProjectReference Include="..\..\src\Anshan.Integration.Http\Anshan.Integration.Http.csproj" />
-      <ProjectReference Include="..\..\src\Anshan.Integration\Anshan.Integration.csproj" />
     </ItemGroup>
 
 </Project>

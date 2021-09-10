@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Uri.Tests.Unit
 {
-    public class UriBuilderTest
+    public class AddressBuilderTest
     {
         [Fact]
         public void Should_generate_a_uri_with_path()
@@ -14,12 +14,12 @@ namespace Uri.Tests.Unit
             var uri = AddressBuilder
                 .Create()
                 .SetBaseAddress("https://www.example.com")
-                .SetPath("mobile")
-                .SetPath("samsung", "galaxy")
+                .SetPath("name1")
+                .SetPath("name2", "name3")
                 .Generate();
 
 
-            uri.Should().Be("https://www.example.com/mobile/samsung/galaxy");
+            uri.Should().Be("https://www.example.com/name1/name2/name3");
         }
 
         [Fact]
@@ -42,14 +42,14 @@ namespace Uri.Tests.Unit
             var uri = AddressBuilder
                 .Create()
                 .SetBaseAddress("https://www.example.com")
-                .SetPath("mobile")
-                .SetPath("samsung", "galaxy")
-                .SetQueryParam("name1", "value1")
-                .SetQueryParam("name2", "value2")
+                .SetPath("name1")
+                .SetPath("name2", "name3")
+                .SetQueryParam("name4", "value1")
+                .SetQueryParam("name5", "value2")
                 .Generate();
 
 
-            uri.Should().Be("https://www.example.com/mobile/samsung/galaxy?name1=value1&name2=value2");
+            uri.Should().Be("https://www.example.com/name1/name2/name3?name4=value1&name5=value2");
         }
 
 

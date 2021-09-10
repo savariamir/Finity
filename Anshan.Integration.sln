@@ -4,7 +4,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{59B4A79D-9A0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D86F9299-2483-4504-B99D-5723F74ACA66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uri.Tests.Unit", "tests\Uri.Tests.Unit\Uri.Tests.Unit.csproj", "{42E5DD66-2BC8-476C-953D-0FBBF1A0A25E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Tests.Unit", "tests\Anshan.Integration.Tests.Unit\Anshan.Integration.Tests.Unit.csproj", "{42E5DD66-2BC8-476C-953D-0FBBF1A0A25E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Grpc", "src\Anshan.Integration.Grpc\Anshan.Integration.Grpc.csproj", "{275F70B0-4421-41B7-8C60-98AC72C350D8}"
 EndProject
