@@ -17,6 +17,7 @@
     </ItemGroup>
     
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Anshan.Integration.Http\Anshan.Integration.Http.csproj" />
       <ProjectReference Include="..\..\src\Anshan.Integration\Anshan.Integration.csproj" />
     </ItemGroup>
 
