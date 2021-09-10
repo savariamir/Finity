@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Anshan.Integration.Http
+namespace Anshan.Integration.Http.Http
 {
     public interface IAnshanHttp
     {

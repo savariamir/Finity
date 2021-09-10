@@ -1,4 +1,4 @@
-namespace Anshan.Integration.Http
+namespace Anshan.Integration.Http.Http
 {
     public class AnshanHttpResult
     {

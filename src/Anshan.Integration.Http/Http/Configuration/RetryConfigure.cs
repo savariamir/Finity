@@ -1,4 +1,4 @@
-namespace Anshan.Integration.Http.Configuration
+namespace Anshan.Integration.Http.Http.Configuration
 {
     public class RetryConfigure 
     {

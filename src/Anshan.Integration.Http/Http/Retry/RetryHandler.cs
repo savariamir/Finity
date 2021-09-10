@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Anshan.Integration.Http.Retry
+namespace Anshan.Integration.Http.Http.Retry
 {
     public class RetryHandler : DelegatingHandler
     {

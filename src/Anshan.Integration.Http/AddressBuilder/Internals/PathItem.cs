@@ -1,4 +1,4 @@
-namespace Anshan.Integration.AddressBuilder.Internals
+namespace Anshan.Integration.Http.AddressBuilder.Internals
 {
     internal class PathItem
     {

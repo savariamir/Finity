@@ -1,10 +1,10 @@
 using System;
 using System.Net.Http;
-using Anshan.Integration.Http.Configuration;
-using Anshan.Integration.Http.Retry;
+using Anshan.Integration.Http.Http.Configuration;
+using Anshan.Integration.Http.Http.Retry;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Anshan.Integration.Http
+namespace Anshan.Integration.Http.Http
 {
     public static class AnshanHttpExtension
     {

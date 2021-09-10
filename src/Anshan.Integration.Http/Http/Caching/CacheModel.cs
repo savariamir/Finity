@@ -1,4 +1,4 @@
-namespace Anshan.Integration.Http.Caching
+namespace Anshan.Integration.Http.Http.Caching
 {
     public class CacheModel<T>
     {

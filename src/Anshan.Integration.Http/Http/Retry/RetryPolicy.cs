@@ -1,7 +1,7 @@
-using Anshan.Integration.Http.Configuration;
+using Anshan.Integration.Http.Http.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Anshan.Integration.Http.Retry
+namespace Anshan.Integration.Http.Http.Retry
 {
     public class RetryPolicy : IRetryPolicy
     {

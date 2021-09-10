@@ -1,6 +1,6 @@
 ﻿using System;
-using Anshan.Integration.AddressBuilder.Builders;
-using Anshan.Integration.AddressBuilder.Exceptions;
+using Anshan.Integration.Http.AddressBuilder.Builders;
+using Anshan.Integration.Http.AddressBuilder.Exceptions;
 using FluentAssertions;
 using Xunit;
 

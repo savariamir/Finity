@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Anshan.Integration.Http.Caching
+namespace Anshan.Integration.Http.Http.Caching
 {
     public class CacheHandler : DelegatingHandler
     {

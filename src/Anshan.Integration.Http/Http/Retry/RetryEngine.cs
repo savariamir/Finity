@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Anshan.Integration.Clock;
+using Anshan.Integration.Http.Clock;
 
-namespace Anshan.Integration.Http.Retry
+namespace Anshan.Integration.Http.Http.Retry
 {
     public class RetryEngine : IRetryEngine
     {

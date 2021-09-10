@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Anshan.Integration.Http
+namespace Anshan.Integration.Http.Http
 {
     public class AnshanHttp : IAnshanHttp
     {

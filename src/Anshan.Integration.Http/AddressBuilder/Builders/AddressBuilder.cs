@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Anshan.Integration.AddressBuilder.Abstractions;
-using Anshan.Integration.AddressBuilder.Exceptions;
-using Anshan.Integration.AddressBuilder.Internals;
+using Anshan.Integration.Http.AddressBuilder.Abstractions;
+using Anshan.Integration.Http.AddressBuilder.Exceptions;
+using Anshan.Integration.Http.AddressBuilder.Internals;
 
-namespace Anshan.Integration.AddressBuilder.Builders
+namespace Anshan.Integration.Http.AddressBuilder.Builders
 {
     public class AddressBuilder : IPath, IQueryParam, IUriBuilder, IGenerate
     {

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Anshan.Integration.Clock
+namespace Anshan.Integration.Http.Clock
 {
     public interface IClock
     {
