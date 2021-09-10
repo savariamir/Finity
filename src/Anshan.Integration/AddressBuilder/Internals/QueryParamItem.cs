@@ -1,4 +1,4 @@
-namespace Uri.Internals
+namespace Anshan.Integration.AddressBuilder.Internals
 {
     internal class QueryParamItem
     {

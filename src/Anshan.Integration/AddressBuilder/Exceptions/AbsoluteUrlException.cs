@@ -1,4 +1,4 @@
-namespace Uri.Exceptions
+namespace Anshan.Integration.AddressBuilder.Exceptions
 {
     public class AbsoluteUrlException : System.Exception
     {

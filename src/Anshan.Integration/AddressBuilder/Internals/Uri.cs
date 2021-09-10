@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Uri.Internals
+namespace Anshan.Integration.AddressBuilder.Internals
 {
     internal static class Uri
     {

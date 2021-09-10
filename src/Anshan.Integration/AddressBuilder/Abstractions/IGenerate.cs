@@ -1,4 +1,4 @@
-namespace Uri.Abstractions
+namespace Anshan.Integration.AddressBuilder.Abstractions
 {
     public interface IGenerate
     {

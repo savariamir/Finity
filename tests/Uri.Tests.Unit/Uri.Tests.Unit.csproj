@@ -17,7 +17,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Uri\Uri.csproj" />
+      <ProjectReference Include="..\..\src\Anshan.Integration\Anshan.Integration.csproj" />
     </ItemGroup>
 
 </Project>
