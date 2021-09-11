@@ -14,7 +14,7 @@ namespace Anshan.Integration.Http.Http.Retry
 
         public bool CanRetry()
         {
-            return _retryCount-- > 0;
+            return _retryCount > 0;
         }
     }
 }

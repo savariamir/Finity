@@ -11,7 +11,7 @@ namespace Anshan.Integration.Http.Http
 
         public AnshanHttp(IHttpClientFactory clientFactory)
         {
-            _httpClient = clientFactory.CreateClient();
+            _httpClient = clientFactory.CreateClient("test");
         }
 
         public async Task<T> GetAsync<T>(string uri)

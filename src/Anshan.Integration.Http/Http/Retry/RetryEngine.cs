@@ -4,6 +4,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Anshan.Integration.Http.Clock;
+using Anshan.Integration.Http.Http.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Anshan.Integration.Http.Http.Retry
 {
@@ -11,11 +13,13 @@ namespace Anshan.Integration.Http.Http.Retry
     {
         private readonly IClock _clock;
         private readonly IRetryPolicy _retryPolicy;
+        private readonly int _waitingRetry;
 
-        public RetryEngine(IClock clock, IRetryPolicy retryPolicy)
+        public RetryEngine(IClock clock, IRetryPolicy retryPolicy,IOptions<RetryConfigure> options)
         {
             _clock = clock;
             _retryPolicy = retryPolicy;
+            _waitingRetry = options.Value.WaitingRetry;
         }
 
         public async Task<HttpResponseMessage> Retry(
@@ -35,12 +39,12 @@ namespace Anshan.Integration.Http.Http.Retry
                     return response;
                 }
 
-                var waitDuration = new TimeSpan(100);
+                var waitDuration = new TimeSpan(_waitingRetry);
                 if (waitDuration > TimeSpan.Zero)
-                    await _clock.SleepAsync(new TimeSpan(100), cancellationToken);
+                    await _clock.SleepAsync(waitDuration, cancellationToken);
             }
 
-            return null;
+            throw new Exception("Retry is zero");
         }
     }
 }

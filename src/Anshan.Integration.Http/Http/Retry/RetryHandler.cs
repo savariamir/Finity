@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,8 +9,7 @@ namespace Anshan.Integration.Http.Http.Retry
     {
         private readonly IRetryEngine _retryEngine;
 
-        public RetryHandler(HttpMessageHandler innerHandler,
-            IRetryEngine retryEngine) : base(innerHandler)
+        public RetryHandler(IRetryEngine retryEngine) 
         {
             _retryEngine = retryEngine;
         }
@@ -27,7 +27,7 @@ namespace Anshan.Integration.Http.Http.Retry
 
                 return response;
             }
-            catch
+            catch(Exception ex)
             {
                 // ignored
             }

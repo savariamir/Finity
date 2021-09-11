@@ -1,5 +1,7 @@
 using System;
 using System.Net.Http;
+using Anshan.Integration.Http.Clock;
+using Anshan.Integration.Http.Http.Caching;
 using Anshan.Integration.Http.Http.Configuration;
 using Anshan.Integration.Http.Http.Retry;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,10 +10,12 @@ namespace Anshan.Integration.Http.Http
 {
     public static class AnshanHttpExtension
     {
-        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name,
-            Action<HttpClient> action)
+        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name)
         {
-            var builder = services.AddHttpClient(name, action);
+            var builder = services.AddHttpClient(name);
+
+            services.AddTransient<IAnshanHttp, AnshanHttp>();
+            services.AddTransient<IClock, SystemClock>();
 
             return builder;
         }
@@ -28,9 +32,23 @@ namespace Anshan.Integration.Http.Http
             {
                 throw new ArgumentNullException(nameof(retryConfigure));
             }
-            
+
+            builder.Services.AddTransient<RetryHandler>();
+            builder.Services.AddTransient<IRetryEngine, RetryEngine>();
+            builder.Services.AddTransient<IRetryPolicy, RetryPolicy>();
+
+
             builder.AddHttpMessageHandler<RetryHandler>()
-                .ConfigureHttpClient(retryConfigure);
+                   .ConfigureHttpClient(retryConfigure);
+
+            return builder;
+        }
+
+        public static IHttpClientBuilder AddCache(this IHttpClientBuilder builder)
+        {
+            builder.Services.AddTransient<CacheHandler>();
+            builder.AddHttpMessageHandler<CacheHandler>();
+            builder.Services.AddMemoryCache();
 
             return builder;
         }
