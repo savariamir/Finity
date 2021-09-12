@@ -15,7 +15,6 @@ namespace Anshan.Integration.Http
     {
         public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name)
         {
-
             services.AddPipeline<AnshanHttpRequestMessage, HttpResponseMessage>()
                     .WithMiddleware<InMemoryCacheMiddleware>()
                     .WithMiddleware<RetryMiddleware>()
