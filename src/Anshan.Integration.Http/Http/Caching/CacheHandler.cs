@@ -20,14 +20,17 @@ namespace Anshan.Integration.Http.Http.Caching
         {
             if (request.RequestUri is null) throw new Exception("");
 
+            if (request.Method == HttpMethod.Get)
+            {
+                var cacheValue =
+                    GetFromCache(CacheKey.GetKey(request.RequestUri.ToString()));
+                if (cacheValue.Hit)
+                    return cacheValue.Data;
+            }
 
-            var cacheKey = CacheKey.GetKey(request.RequestUri.ToString());
-            var cacheValue = GetFromCache(cacheKey);
-            if (cacheValue.Hit)
-                return cacheValue.Data;
 
             var response = await base.SendAsync(request, cancellationToken);
-            SetCache(response, cacheKey);
+            SetCache(response, CacheKey.GetKey(request.RequestUri.ToString()));
 
             return response;
         }

@@ -17,7 +17,7 @@ namespace Anshan.Integration.Sample.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var ok = await _anshanHttp.GetAsync<object>("http://localhost:5003/api/articles");
+            var ok = await _anshanHttp.GetAsync<object>("https://run.mocky.io/v3/10cb934a-b8be-4b75-8b2f-aef09574bd7e");
             
             return Ok(ok);
         }

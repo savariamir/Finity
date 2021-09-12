@@ -36,7 +36,7 @@ namespace Anshan.Integration.Http.Http
             builder.Services.AddTransient<RetryHandler>();
             builder.Services.AddTransient<IRetryEngine, RetryEngine>();
             builder.Services.AddTransient<IRetryPolicy, RetryPolicy>();
-
+            builder.Services.AddMemoryCache();
 
             builder.AddHttpMessageHandler<RetryHandler>()
                    .ConfigureHttpClient(retryConfigure);
