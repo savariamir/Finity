@@ -1,6 +1,6 @@
 using System;
 using System.Net.Http;
-using Anshan.Integration.Http.Http;
+using Anshan.Integration.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,32 +34,33 @@ namespace Anshan.Integration.Sample
             });
 
             services.AddAnshanHttpClient("test")
-                .AddRetry(a =>
-                {
-                    a.RetryCount = 5;
-                    a.WaitingRetry = 100;
-                });
-            // .AddCache();
-            // services.AddHttpContextAccessor();
+                    .AddRetry(a =>
+                    {
+                        a.RetryCount = 5;
+                        a.SleepDurationRetry = TimeSpan.FromSeconds(1);
+                    }).AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); });
 
-            services.AddHttpClient("csharpcorner")  
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))  
-                // important step  
-                .AddPolicyHandler(GetRetryPolicy())  
-                ;  
+            //
+            // services.AddHttpClient("csharpcorner")  
+            //     .SetHandlerLifetime(TimeSpan.FromMinutes(5))  
+            //     // important step  
+            //     .AddPolicyHandler(GetRetryPolicy())  
+            //     ;  
+            //
+            // services.AddHttpContextAccessor();
         }
-        
-        private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()  
-        {  
-            return HttpPolicyExtensions  
-                    // HttpRequestException, 5XX and 408  
-                    .HandleTransientHttpError()  
-                    // 404  
-                    .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)  
-                    // Retry two times after delay  
-                    .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))  
-                ;  
-        }  
+
+        private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                   // HttpRequestException, 5XX and 408  
+                   .HandleTransientHttpError()
+                   // 404  
+                   .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                   // Retry two times after delay  
+                   .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                ;
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

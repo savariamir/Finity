@@ -1,8 +1,8 @@
-namespace Anshan.Integration.Http.Http.Caching
+namespace Anshan.Integration.Http.Caching
 {
-    public class CacheModel<T>
+    internal class CacheResult<T>
     {
-        public CacheModel(T data)
+        public CacheResult(T data)
         {
             Data = data;
         }

@@ -1,4 +1,4 @@
-namespace Anshan.Integration.Http.Http.Authentication
+namespace Anshan.Integration.Http.Authentication
 {
     public class AuthenticationHandler
     {

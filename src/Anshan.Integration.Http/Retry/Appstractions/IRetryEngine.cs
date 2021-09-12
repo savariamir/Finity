@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Anshan.Integration.Http.Http.Retry
+namespace Anshan.Integration.Http.Retry.Appstractions
 {
-    public interface IRetryEngine
+    internal interface IRetryEngine
     {
         Task<HttpResponseMessage> Retry(
             Func<Task<HttpResponseMessage>> sendAsync,
