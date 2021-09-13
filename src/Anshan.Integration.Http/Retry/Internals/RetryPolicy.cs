@@ -1,4 +1,4 @@
-using Anshan.Integration.Http.Retry.Appstractions;
+using Anshan.Integration.Http.Retry.Abstractions;
 using Anshan.Integration.Http.Retry.Configurations;
 using Microsoft.Extensions.Options;
 
@@ -16,7 +16,7 @@ namespace Anshan.Integration.Http.Retry.Internals
         public bool CanRetry()
         {
             var canRetry = _retryCount > 0;
-            _retryCount = _retryCount - 1;
+            _retryCount -= 1;
 
             return canRetry;
         }

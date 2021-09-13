@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Anshan.Integration.Http.Clock
 {
-    public interface IClock
+    internal interface IClock
     {
         // Func<TimeSpan, CancellationToken, Task> SleepAsync ;
         /// <summary>

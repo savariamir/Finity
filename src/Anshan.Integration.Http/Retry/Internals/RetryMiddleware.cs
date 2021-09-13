@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Anshan.Integration.Http.Clock;
-using Anshan.Integration.Http.Retry.Appstractions;
+using Anshan.Integration.Http.Retry.Abstractions;
 using Anshan.Integration.Http.Retry.Configurations;
 using Anshan.Integration.Http.Retry.Exceptions;
 using EasyPipe;
@@ -18,11 +18,11 @@ namespace Anshan.Integration.Http.Retry.Internals
         private readonly IRetryPolicy _retryPolicy;
         private readonly RetryConfigure _retryConfigure;
 
-        public RetryMiddleware(IClock clock, IRetryPolicy retryPolicy, IOptions<RetryConfigure> options)
+        public RetryMiddleware(IClock clock, IRetryPolicy retryPolicy, IOptionsSnapshot<RetryConfigure> options)
         {
             _clock = clock;
             _retryPolicy = retryPolicy;
-            _retryConfigure = options.Value;
+            _retryConfigure = options.Get("test1");
         }
 
         public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, 
@@ -49,7 +49,5 @@ namespace Anshan.Integration.Http.Retry.Internals
 
             throw new RetryOutOfRangeException();
         }
-
-   
     }
 }

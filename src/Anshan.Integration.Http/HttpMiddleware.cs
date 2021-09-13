@@ -8,10 +8,10 @@ namespace Anshan.Integration.Http
 {
     public class HttpMiddleware : IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
     {
-        public Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, IPipelineContext context, Func<Task<HttpResponseMessage>> next,
+        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, IPipelineContext context, Func<Task<HttpResponseMessage>> next,
                                                   CancellationToken cancellationToken)
         {
-            var response = request.SendAsync();
+            var response = await request.SendAsync();
 
             return response;
         }

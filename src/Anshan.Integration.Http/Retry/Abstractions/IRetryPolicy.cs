@@ -1,4 +1,4 @@
-namespace Anshan.Integration.Http.Retry.Appstractions
+namespace Anshan.Integration.Http.Retry.Abstractions
 {
     internal interface IRetryPolicy
     {

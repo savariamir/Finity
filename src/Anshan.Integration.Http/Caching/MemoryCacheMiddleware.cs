@@ -8,12 +8,12 @@ using Microsoft.Extensions.Options;
 
 namespace Anshan.Integration.Http.Caching
 {
-    public class InMemoryCacheMiddleware: IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
+    public class MemoryCacheMiddleware: IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
     {
         private readonly IMemoryCache _cache;
         private readonly CacheConfigure _cacheConfigure; 
         
-        public InMemoryCacheMiddleware(IMemoryCache cache, IOptions<CacheConfigure> options)
+        public MemoryCacheMiddleware(IMemoryCache cache, IOptions<CacheConfigure> options)
         {
             _cache = cache;
             _cacheConfigure = options.Value;
@@ -33,7 +33,7 @@ namespace Anshan.Integration.Http.Caching
                 GetFromCache(CacheKey.GetKey(request.Request.RequestUri.ToString()));
 
             if (cacheValue.Hit)
-                return null;
+                return cacheValue.Data;
 
             var response = await next();
             
