@@ -38,7 +38,8 @@ namespace Anshan.Integration.Sample
                     {
                         a.RetryCount = 5;
                         a.SleepDurationRetry = TimeSpan.FromSeconds(1);
-                    }).AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
+                    })
+                    // .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
                     .AddCircuitBreaker();
             
             
@@ -48,15 +49,20 @@ namespace Anshan.Integration.Sample
                         a.RetryCount = 2;
                         a.SleepDurationRetry = TimeSpan.FromSeconds(200);
                     }).AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
+                    .SetHandlerLifetime(TimeSpan.FromSeconds(100))
                     .AddCircuitBreaker();
 
             
-            services.AddHttpClient("csharpcorner")  
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))  
-                // important step  
-                .AddPolicyHandler(GetRetryPolicy())  
-                ;  
-            
+            // services.AddHttpClient("csharpcorner")  
+            //     .SetHandlerLifetime(TimeSpan.FromMinutes(5))  
+            //     // important step  
+            //     .AddPolicyHandler(GetRetryPolicy());
+            //
+            // services.AddHttpClient("csharpcorner")
+            //         .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            //         // important step  
+            //         .AddPolicyHandler(GetRetryPolicy());
+
             // services.AddHttpContextAccessor();
         }
 

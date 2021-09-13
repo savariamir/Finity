@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Anshan.Integration.Http.Clock;
-using Anshan.Integration.Http.Retry.Abstractions;
 using Anshan.Integration.Http.Retry.Configurations;
 using Anshan.Integration.Http.Retry.Exceptions;
 using EasyPipe;
@@ -12,25 +11,25 @@ using Microsoft.Extensions.Options;
 
 namespace Anshan.Integration.Http.Retry.Internals
 {
-    internal class RetryMiddleware : IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
+    internal class RetryMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IClock _clock;
-        private readonly IRetryPolicy _retryPolicy;
-        private readonly RetryConfigure _retryConfigure;
+        private readonly IOptionsSnapshot<RetryConfigure> _options;
 
-        public RetryMiddleware(IClock clock, IRetryPolicy retryPolicy, IOptionsSnapshot<RetryConfigure> options)
+        public RetryMiddleware(IClock clock, IOptionsSnapshot<RetryConfigure> options)
         {
             _clock = clock;
-            _retryPolicy = retryPolicy;
-            _retryConfigure = options.Get("test1");
+            _options = options;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, 
-                                                        IPipelineContext context, 
-                                                        Func<Task<HttpResponseMessage>> next, 
+        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request,
+                                                        IPipelineContext context,
+                                                        Func<Task<HttpResponseMessage>> next,
                                                         CancellationToken cancellationToken)
         {
-            while (_retryPolicy.CanRetry())
+            var retryConfigure = _options.Get(request.ClientName);
+
+            for (var i = 0; i < retryConfigure.RetryCount; i++)
             {
                 var response = await next();
 
@@ -43,8 +42,8 @@ namespace Anshan.Integration.Http.Retry.Internals
                     return response;
                 }
 
-                if (_retryConfigure.SleepDurationRetry > TimeSpan.Zero)
-                    await _clock.SleepAsync(_retryConfigure.SleepDurationRetry, cancellationToken);
+                if (retryConfigure.SleepDurationRetry > TimeSpan.Zero)
+                    await _clock.SleepAsync(retryConfigure.SleepDurationRetry , cancellationToken);
             }
 
             throw new RetryOutOfRangeException();

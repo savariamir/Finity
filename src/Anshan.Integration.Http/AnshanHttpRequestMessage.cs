@@ -8,5 +8,7 @@ namespace Anshan.Integration.Http
     {
         public Func<Task<HttpResponseMessage>> SendAsync { set; get; }
         public HttpRequestMessage Request { set; get; }
+        
+        public string ClientName { set; get; }
     }
 }

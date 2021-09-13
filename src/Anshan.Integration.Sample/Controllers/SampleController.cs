@@ -12,10 +12,12 @@ namespace Anshan.Integration.Sample.Controllers
     {
 
         private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient1;
 
         public SampleController(IHttpClientFactory clientFactory)
         {
             _httpClient = clientFactory.CreateClient("test");
+            _httpClient1 = clientFactory.CreateClient("test1");
         }
         
 
@@ -24,6 +26,10 @@ namespace Anshan.Integration.Sample.Controllers
         {
             var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get,
                 "https://run.mocky.io/v3/10cb934a-b8be-4b75-8b2f-aef09574bd7e"));
+            
+            var response1 = await _httpClient1.SendAsync(new HttpRequestMessage(HttpMethod.Get,
+                "https://run.mocky.io/v3/10cb934a-b8be-4b75-8b2f-aef09574bd7e"));
+            
             if (!response.IsSuccessStatusCode) throw new Exception();
 
 

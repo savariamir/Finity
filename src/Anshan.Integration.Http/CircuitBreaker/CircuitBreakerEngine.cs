@@ -43,8 +43,6 @@ namespace Anshan.Integration.Http.CircuitBreaker
 
             EnsureTimeoutHasExpired();
             
-
-
             var lockTaken = false;
             try
             {
