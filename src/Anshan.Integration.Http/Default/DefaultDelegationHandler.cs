@@ -2,9 +2,10 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Anshan.Integration.Http.Request;
 using EasyPipe;
 
-namespace Anshan.Integration.Http
+namespace Anshan.Integration.Http.Default
 {
     internal class DefaultDelegationHandler : DelegatingHandler
     {
@@ -24,7 +25,7 @@ namespace Anshan.Integration.Http
         {
             var response = await _pipeline.RunAsync(new AnshanHttpRequestMessage
             {
-                Request = request,
+                HttpRequestMessage = request,
                 SendAsync = () => base.SendAsync(request, cancellationToken),
                 ClientName = _clientName
             }, cancellationToken);

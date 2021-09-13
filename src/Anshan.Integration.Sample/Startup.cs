@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using Anshan.Integration.Http;
+using Anshan.Integration.Http.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

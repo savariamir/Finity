@@ -4,12 +4,14 @@ using Anshan.Integration.Http.Caching;
 using Anshan.Integration.Http.CircuitBreaker;
 using Anshan.Integration.Http.Clock;
 using Anshan.Integration.Http.Configuration;
+using Anshan.Integration.Http.Default;
+using Anshan.Integration.Http.Request;
 using Anshan.Integration.Http.Retry.Configurations;
 using Anshan.Integration.Http.Retry.Internals;
 using EasyPipe.Extensions.MicrosoftDependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Anshan.Integration.Http
+namespace Anshan.Integration.Http.Extensions
 {
     public static class AnshanHttpExtension
     {
@@ -20,7 +22,7 @@ namespace Anshan.Integration.Http
                     .WithMiddleware<MemoryCacheMiddleware>()
                     .WithMiddleware<RetryMiddleware>()
                     .WithMiddleware<CircuitBreakerMiddleware>()
-                    .WithMiddleware<HttpMiddleware>();
+                    .WithMiddleware<DefaultMiddleware>();
 
 
             var builder = services.AddHttpClient(name, configureClient);
@@ -39,7 +41,7 @@ namespace Anshan.Integration.Http
                     .WithMiddleware<MemoryCacheMiddleware>()
                     .WithMiddleware<RetryMiddleware>()
                     .WithMiddleware<CircuitBreakerMiddleware>()
-                    .WithMiddleware<HttpMiddleware>();
+                    .WithMiddleware<DefaultMiddleware>();
 
             var builder = services.AddHttpClient(string.Empty);
 
@@ -58,7 +60,7 @@ namespace Anshan.Integration.Http
                     .WithMiddleware<MemoryCacheMiddleware>()
                     .WithMiddleware<RetryMiddleware>()
                     .WithMiddleware<CircuitBreakerMiddleware>()
-                    .WithMiddleware<HttpMiddleware>();
+                    .WithMiddleware<DefaultMiddleware>();
 
             var builder = services.AddHttpClient(name);
 
@@ -99,7 +101,6 @@ namespace Anshan.Integration.Http
                                                   Action<CacheConfigure> cacheConfigure)
         {
             builder.Services.AddMemoryCache();
-            builder.Services.AddTransient<ICacheEngine, CacheEngine>();
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name, options => options.IsCacheEnabled = true);
             builder.Services.Configure(cacheConfigure);
             return builder;

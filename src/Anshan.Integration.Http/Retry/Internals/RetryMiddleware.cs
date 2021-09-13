@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Anshan.Integration.Http.Clock;
+using Anshan.Integration.Http.Request;
 using Anshan.Integration.Http.Retry.Configurations;
 using Anshan.Integration.Http.Retry.Exceptions;
 using EasyPipe;
