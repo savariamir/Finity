@@ -14,12 +14,10 @@ namespace Shemy.Pipeline.Internal
         private readonly Type[] _middlewareTypes;
         private readonly IServiceProvider _serviceProvider;
         private readonly AnshanFactoryOptions _options;
-        private readonly string _clientName;
 
         public LazyPipeline(IServiceProvider serviceProvider, IEnumerable<Type> middlewareTypes, string clientName)
         {
             _serviceProvider = serviceProvider;
-            _clientName = clientName;
             _middlewareTypes = middlewareTypes.ToArray();
             _options = ((IOptionsSnapshot<AnshanFactoryOptions>)
                 _serviceProvider.GetService(typeof(IOptionsSnapshot<AnshanFactoryOptions>)))?.Get(clientName);
@@ -27,17 +25,16 @@ namespace Shemy.Pipeline.Internal
 
         public Task<TResponse> RunAsync(TRequest request, CancellationToken cancellationToken)
         {
-            Func<Task<TResponse>> middlewareDelegate = null;
             IPipelineContext context = new PipelineContext();
 
             var index = 0;
 
             var middlewares = _middlewareTypes.Where(middlewareType =>
-                                                  _options.Types.Contains(middlewareType))
-                                              .ToArray();
+                    _options.Types.Contains(middlewareType))
+                .ToArray();
 
 
-            middlewareDelegate = () =>
+            Task<TResponse> Next()
             {
                 if (middlewares.Length == index)
                 {
@@ -46,18 +43,15 @@ namespace Shemy.Pipeline.Internal
 
                 var middlewareType = middlewares[index++];
 
-
-                var middleware = _serviceProvider.GetService(middlewareType) as IMiddleware<TRequest, TResponse>;
-
-                if (middleware is null)
+                if (_serviceProvider.GetService(middlewareType) is not IMiddleware<TRequest, TResponse> middleware)
                 {
                     throw new MiddlewareNotResolvedException(middlewareType);
                 }
 
-                return middleware.RunAsync(request, context, middlewareDelegate, cancellationToken);
-            };
+                return middleware.RunAsync(request, context, Next, cancellationToken);
+            }
 
-            return middlewareDelegate();
+            return Next();
         }
     }
 }

@@ -27,8 +27,8 @@ namespace Shemy.Http.Controllers
             var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get,
                 "https://run.mocky.io/v3/10cb934a-b8be-4b75-8b2f-aef09574bd7e"));
             
-            var response1 = await _httpClient1.SendAsync(new HttpRequestMessage(HttpMethod.Get,
-                "https://run.mocky.io/v3/10cb934a-b8be-4b75-8b2f-aef09574bd7e"));
+            // var response1 = await _httpClient1.SendAsync(new HttpRequestMessage(HttpMethod.Get,
+            //     "https://run.mocky.io/v3/10cb934a-b8be-4b75-8b2f-aef09574bd7e"));
             
             if (!response.IsSuccessStatusCode) throw new Exception();
 

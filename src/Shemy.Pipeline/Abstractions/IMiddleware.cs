@@ -11,11 +11,4 @@ namespace Shemy.Pipeline.Abstractions
                                  Func<Task<TResponse>> next,
                                  CancellationToken cancellationToken);
     }
-
-    public interface IMiddleware<TResponse>
-    {
-        Task<TResponse> RunAsync(IPipelineContext context,
-                                 Func<Task<TResponse>> next,
-                                 CancellationToken cancellationToken);
-    }
 }
