@@ -30,24 +30,21 @@ namespace Shemy.Pipeline.Internal
             Func<Task<TResponse>> middlewareDelegate = null;
             IPipelineContext context = new PipelineContext();
 
-            int index = 0;
+            var index = 0;
 
-            var middlewares = new List<Type>();
-            foreach (var middlewareType in _middlewareTypes)
-            {
-                if (_options.Types.Contains(middlewareType))
-                    middlewares.Add(middlewareType);
-            }
+            var middlewares = _middlewareTypes.Where(middlewareType =>
+                                                  _options.Types.Contains(middlewareType))
+                                              .ToArray();
 
 
             middlewareDelegate = () =>
             {
-                if (middlewares.ToArray().Length == index)
+                if (middlewares.Length == index)
                 {
                     return Task.FromResult<TResponse>(default);
                 }
 
-                var middlewareType = middlewares.ToArray()[index++];
+                var middlewareType = middlewares[index++];
 
 
                 var middleware = _serviceProvider.GetService(middlewareType) as IMiddleware<TRequest, TResponse>;
