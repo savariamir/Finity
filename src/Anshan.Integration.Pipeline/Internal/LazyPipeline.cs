@@ -8,7 +8,7 @@ using Anshan.Integration.Pipeline.Exceptions;
 
 namespace Anshan.Integration.Pipeline.Internal
 {
-    internal class LazyPipeline<TRequest, TResponse> : IPipeline<TRequest, TResponse>
+    public class LazyPipeline<TRequest, TResponse> : IPipeline<TRequest, TResponse>
     {
         private readonly Type[] _middlewareTypes;
         private readonly IServiceProvider _serviceProvider;
@@ -18,7 +18,7 @@ namespace Anshan.Integration.Pipeline.Internal
             _serviceProvider = serviceProvider;
             _middlewareTypes = middlewareTypes.ToArray();
         }
-
+        
         public Task<TResponse> RunAsync(TRequest request, CancellationToken cancellationToken)
         {
             Func<Task<TResponse>> middlewareDelegate = null;

@@ -8,75 +8,123 @@ using Anshan.Integration.Http.Default;
 using Anshan.Integration.Http.Request;
 using Anshan.Integration.Http.Retry.Configurations;
 using Anshan.Integration.Http.Retry.Internals;
-using EasyPipe.Extensions.MicrosoftDependencyInjection;
+using Anshan.Integration.Pipeline;
+using Anshan.Integration.Pipeline.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Anshan.Integration.Http.Extensions
 {
+    public interface IAnshanHttpClientBuilder
+    {
+    }
+
+    internal class AnshanHttpClientBuilder : IAnshanHttpClientBuilder
+    {
+        public PipelineBuilder<AnshanHttpRequestMessage, HttpResponseMessage> PipelineBuilder { get; set; }
+        public IServiceCollection Services { get; set; }
+        public IHttpClientBuilder HttpClientBuilder { get; }
+
+        public string Name { get; set; }
+
+        public AnshanHttpClientBuilder(IHttpClientBuilder httpClientBuilder)
+        {
+            HttpClientBuilder = httpClientBuilder;
+        }
+    }
+
     public static class AnshanHttpExtension
     {
-        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name,
-                                                             Action<HttpClient> configureClient)
+        public static IAnshanHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name,
+                                                                   Action<HttpClient> configureClient)
         {
-            services.AddPipeline<AnshanHttpRequestMessage, HttpResponseMessage>()
-                    .WithMiddleware<MemoryCacheMiddleware>()
-                    .WithMiddleware<RetryMiddleware>()
-                    .WithMiddleware<CircuitBreakerMiddleware>()
-                    .WithMiddleware<DefaultMiddleware>();
-
-
             var builder = services.AddHttpClient(name, configureClient);
 
-            builder.AddHttpMessageHandler((sp) => new DefaultDelegationHandler(name, sp));
 
-            builder.AddHttpMessageHandler<DefaultDelegationHandler>();
-            builder.Services.AddMemoryCache();
+            var anshanHttpClientBuilder = new AnshanHttpClientBuilder(builder)
+            {
+                PipelineBuilder = new PipelineBuilder<AnshanHttpRequestMessage, HttpResponseMessage>(services),
+                Services = services,
+                Name = name
+            };
 
-            return builder;
+            anshanHttpClientBuilder.PipelineBuilder.AddMiddleware<DefaultMiddleware>();
+
+            builder.AddHttpMessageHandler(sp =>
+            {
+                anshanHttpClientBuilder.PipelineBuilder.Middlewares.Reverse();
+                var pipeline = new LazyPipeline<AnshanHttpRequestMessage,
+                    HttpResponseMessage>(sp, anshanHttpClientBuilder.PipelineBuilder.Middlewares);
+
+                return new DefaultDelegationHandler(name, pipeline);
+            });
+
+            return anshanHttpClientBuilder;
         }
-
-        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services)
+        
+        public static IAnshanHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name)
         {
-            services.AddPipeline<AnshanHttpRequestMessage, HttpResponseMessage>()
-                    .WithMiddleware<MemoryCacheMiddleware>()
-                    .WithMiddleware<RetryMiddleware>()
-                    .WithMiddleware<CircuitBreakerMiddleware>()
-                    .WithMiddleware<DefaultMiddleware>();
-
-            var builder = services.AddHttpClient(string.Empty);
-
-            services.AddTransient<DefaultDelegationHandler>();
-
-            builder.AddHttpMessageHandler((sp) => new DefaultDelegationHandler(string.Empty, sp));
-
-            builder.Services.AddMemoryCache();
-
-            return builder;
-        }
-
-        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name)
-        {
-            services.AddPipeline<AnshanHttpRequestMessage, HttpResponseMessage>()
-                    .WithMiddleware<MemoryCacheMiddleware>()
-                    .WithMiddleware<RetryMiddleware>()
-                    .WithMiddleware<CircuitBreakerMiddleware>()
-                    .WithMiddleware<DefaultMiddleware>();
-
             var builder = services.AddHttpClient(name);
 
-            builder.AddHttpMessageHandler((sp) => new DefaultDelegationHandler(name, sp));
 
-            builder.Services.AddMemoryCache();
-
-            return builder;
-        }
-
-        public static IHttpClientBuilder AddRetry(this IHttpClientBuilder builder,
-                                                  Action<RetryConfigure> retryConfigure)
-        {
-            if (builder == null)
+            var anshanHttpClientBuilder = new AnshanHttpClientBuilder(builder)
             {
-                throw new ArgumentNullException(nameof(builder));
+                PipelineBuilder = new PipelineBuilder<AnshanHttpRequestMessage, HttpResponseMessage>(services),
+                Services = services,
+                Name = name
+            };
+
+            anshanHttpClientBuilder.PipelineBuilder.AddMiddleware<DefaultMiddleware>();
+
+            builder.AddHttpMessageHandler(sp =>
+            {
+                anshanHttpClientBuilder.PipelineBuilder.Middlewares.Reverse();
+                var pipeline = new LazyPipeline<AnshanHttpRequestMessage,
+                    HttpResponseMessage>(sp, anshanHttpClientBuilder.PipelineBuilder.Middlewares);
+
+                return new DefaultDelegationHandler(name, pipeline);
+            });
+
+            return anshanHttpClientBuilder;
+        }
+        
+        public static IAnshanHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services)
+        {
+            var builder = services.AddHttpClient(string.Empty);
+
+
+            var anshanHttpClientBuilder = new AnshanHttpClientBuilder(builder)
+            {
+                PipelineBuilder = new PipelineBuilder<AnshanHttpRequestMessage, HttpResponseMessage>(services),
+                Services = services,
+                Name = string.Empty
+            };
+
+            anshanHttpClientBuilder.PipelineBuilder.AddMiddleware<DefaultMiddleware>();
+
+            builder.AddHttpMessageHandler(sp =>
+            {
+                anshanHttpClientBuilder.PipelineBuilder.Middlewares.Reverse();
+                var pipeline = new LazyPipeline<AnshanHttpRequestMessage,
+                    HttpResponseMessage>(sp, anshanHttpClientBuilder.PipelineBuilder.Middlewares);
+
+                return new DefaultDelegationHandler( string.Empty, pipeline);
+            });
+
+            return anshanHttpClientBuilder;
+        }
+        
+
+
+        public static IAnshanHttpClientBuilder AddRetry(this IAnshanHttpClientBuilder anshanBuilder,
+                                                        Action<RetryConfigure> retryConfigure)
+        {
+            var internalAnshanBuilder = anshanBuilder as AnshanHttpClientBuilder;
+
+            internalAnshanBuilder.PipelineBuilder.AddMiddleware<RetryMiddleware>();
+
+            if (anshanBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(anshanBuilder));
             }
 
             if (retryConfigure == null)
@@ -85,53 +133,61 @@ namespace Anshan.Integration.Http.Extensions
             }
 
 
-            builder.Services.AddTransient<IClock, SystemClock>();
-            builder.Services.AddMemoryCache();
+            internalAnshanBuilder.Services.AddTransient<IClock, SystemClock>();
+            internalAnshanBuilder.Services.AddMemoryCache();
 
-            builder.ConfigureHttpClient(retryConfigure);
+            internalAnshanBuilder.Services.Configure(internalAnshanBuilder.Name, retryConfigure);
 
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
+
+            internalAnshanBuilder.Services.Configure<AnshanFactoryOptions>(internalAnshanBuilder.Name,
                 factoryOptions => factoryOptions.IsRetryEnabled = true);
 
-            return builder;
+            return anshanBuilder;
         }
 
 
-        public static IHttpClientBuilder AddCache(this IHttpClientBuilder builder,
-                                                  Action<CacheConfigure> cacheConfigure)
+        public static IAnshanHttpClientBuilder AddCache(this IAnshanHttpClientBuilder builder,
+                                                        Action<CacheConfigure> cacheConfigure)
         {
-            builder.Services.AddMemoryCache();
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name, options => options.IsCacheEnabled = true);
-            builder.Services.Configure(cacheConfigure);
+            var internalAnshanBuilder = builder as AnshanHttpClientBuilder;
+
+            internalAnshanBuilder.PipelineBuilder.AddMiddleware<MemoryCacheMiddleware>();
+            
+            internalAnshanBuilder.Services.AddMemoryCache();
+            internalAnshanBuilder.Services.Configure<AnshanFactoryOptions>(internalAnshanBuilder.Name,
+                options => options.IsCacheEnabled = true);
+            internalAnshanBuilder.Services.Configure(internalAnshanBuilder.Name, cacheConfigure);
             return builder;
         }
 
-        public static IHttpClientBuilder AddCircuitBreaker(this IHttpClientBuilder builder)
+        public static IAnshanHttpClientBuilder AddCircuitBreaker(this IAnshanHttpClientBuilder builder)
         {
-            builder.Services.AddTransient<ICircuitBreakerEngine, CircuitBreakerEngine>();
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
+            var internalAnshanBuilder = builder as AnshanHttpClientBuilder;
+            internalAnshanBuilder.PipelineBuilder.AddMiddleware<CircuitBreakerMiddleware>();
+            internalAnshanBuilder.Services.AddTransient<ICircuitBreakerEngine, CircuitBreakerEngine>();
+            internalAnshanBuilder.Services.Configure<AnshanFactoryOptions>(internalAnshanBuilder.Name,
                 options => options.IsCircuitBreakerEnabled = true);
             return builder;
         }
 
 
-        private static IHttpClientBuilder ConfigureHttpClient(this IHttpClientBuilder builder,
-                                                              Action<RetryConfigure> retryConfigure)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (retryConfigure == null)
-            {
-                throw new ArgumentNullException(nameof(retryConfigure));
-            }
-
-            builder.Services.Configure(builder.Name, retryConfigure);
-
-
-            return builder;
-        }
+        // private static IAnshanHttpClientBuilder ConfigureHttpClient(this IAnshanHttpClientBuilder builder,
+        //                                                             Action<RetryConfigure> retryConfigure)
+        // {
+        //     if (builder == null)
+        //     {
+        //         throw new ArgumentNullException(nameof(builder));
+        //     }
+        //
+        //     if (retryConfigure == null)
+        //     {
+        //         throw new ArgumentNullException(nameof(retryConfigure));
+        //     }
+        //
+        //     builder.Services.Configure(builder.Name, retryConfigure);
+        //
+        //
+        //     return builder;
+        // }
     }
 }

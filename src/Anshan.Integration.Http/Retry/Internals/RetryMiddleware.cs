@@ -7,7 +7,7 @@ using Anshan.Integration.Http.Clock;
 using Anshan.Integration.Http.Request;
 using Anshan.Integration.Http.Retry.Configurations;
 using Anshan.Integration.Http.Retry.Exceptions;
-using EasyPipe;
+using Anshan.Integration.Pipeline.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Anshan.Integration.Http.Retry.Internals

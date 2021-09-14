@@ -4,10 +4,11 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="EasyPipe" Version="0.2.0" />
-        <PackageReference Include="EasyPipe.Extensions.MicrosoftDependencyInjection" Version="0.2.0" />
         <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Anshan.Integration.Pipeline\Anshan.Integration.Pipeline.csproj" />
     </ItemGroup>
 
 </Project>

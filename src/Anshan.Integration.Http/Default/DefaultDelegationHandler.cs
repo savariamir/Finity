@@ -1,9 +1,8 @@
-using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Anshan.Integration.Http.Request;
-using EasyPipe;
+using Anshan.Integration.Pipeline.Abstractions;
 
 namespace Anshan.Integration.Http.Default
 {
@@ -12,11 +11,10 @@ namespace Anshan.Integration.Http.Default
         private readonly IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> _pipeline;
         private readonly string _clientName;
 
-        public DefaultDelegationHandler(string clientName, IServiceProvider services)
+        public DefaultDelegationHandler(string clientName, IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> pipeline)
         {
             _clientName = clientName;
-            _pipeline = (IPipeline<AnshanHttpRequestMessage, HttpResponseMessage>)services.GetService(
-                typeof(IPipeline<AnshanHttpRequestMessage, HttpResponseMessage>));
+            _pipeline = pipeline;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
