@@ -4,15 +4,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{59B4A79D-9A0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D86F9299-2483-4504-B99D-5723F74ACA66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Tests.Unit", "tests\Anshan.Integration.Tests.Unit\Anshan.Integration.Tests.Unit.csproj", "{42E5DD66-2BC8-476C-953D-0FBBF1A0A25E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shemy.Tests.Unit", "tests\Shemy.Tests.Unit\Shemy.Tests.Unit.csproj", "{42E5DD66-2BC8-476C-953D-0FBBF1A0A25E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Grpc", "src\Anshan.Integration.Grpc\Anshan.Integration.Grpc.csproj", "{275F70B0-4421-41B7-8C60-98AC72C350D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shemy.Grpc", "src\Shemy.Grpc\Shemy.Grpc.csproj", "{275F70B0-4421-41B7-8C60-98AC72C350D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Http", "src\Anshan.Integration.Http\Anshan.Integration.Http.csproj", "{AFE93EDF-FC06-4B75-BE96-7EC80FC49F00}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shemy.Http", "src\Shemy.Http\Shemy.Http.csproj", "{AFE93EDF-FC06-4B75-BE96-7EC80FC49F00}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Sample", "src\Anshan.Integration.Sample\Anshan.Integration.Sample.csproj", "{B00F10C5-541A-4017-A212-D3D7DE4992B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shemy.Sample", "src\Shemy.Sample\Shemy.Sample.csproj", "{B00F10C5-541A-4017-A212-D3D7DE4992B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Anshan.Integration.Pipeline", "src\Anshan.Integration.Pipeline\Anshan.Integration.Pipeline.csproj", "{38B7487F-DB85-4E17-8DF3-E7E453AF02ED}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shemy.Pipeline", "src\Shemy.Pipeline\Shemy.Pipeline.csproj", "{38B7487F-DB85-4E17-8DF3-E7E453AF02ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
