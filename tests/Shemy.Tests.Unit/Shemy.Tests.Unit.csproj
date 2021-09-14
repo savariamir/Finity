@@ -17,7 +17,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Shemy.Http\Shemy.Http.csproj" />
+      <ProjectReference Include="..\..\src\Shemy\Shemy.csproj" />
     </ItemGroup>
 
 </Project>

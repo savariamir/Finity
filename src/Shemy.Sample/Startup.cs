@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Extensions.Http;
-using Shemy.Http.Extensions;
+using Shemy.Extensions;
 
 // using Polly;
 // using Polly.Extensions.Http; 
@@ -43,25 +43,25 @@ namespace Shemy.Http
 
             //
             services.AddAnshanHttpClient("test1")
-                    // .AddRetry(a =>
-                    // {
-                    //     a.RetryCount = 2;
-                    //     a.SleepDurationRetry = TimeSpan.FromSeconds(200);
-                    // })
+                    .AddRetry(a =>
+                    {
+                        a.RetryCount = 2;
+                        a.SleepDurationRetry = TimeSpan.FromSeconds(200);
+                    })
                     // .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
-            // .SetHandlerLifetime(TimeSpan.FromSeconds(100))
-            .AddCircuitBreaker();
+                    // .SetHandlerLifetime(TimeSpan.FromSeconds(100))
+                    .AddCircuitBreaker();
 
 
-            // services.AddHttpClient("csharpcorner")  
-            //     .SetHandlerLifetime(TimeSpan.FromMinutes(5))  
-            //     // important step  
-            //     .AddPolicyHandler(GetRetryPolicy());
-            //
-            services.AddHttpClient("csharpcorner")
-                    .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                    // important step  
-                    .AddPolicyHandler(GetRetryPolicy());
+            // services.AddHttpClient("csharpcorner")
+            //         .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            //         // important step  
+            //         .AddPolicyHandler(GetRetryPolicy());
+
+            // services.AddHttpClient("csharpcorner")
+            //         .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            //         // important step  
+            //         .AddPolicyHandler(GetRetryPolicy());
 
             // services.AddHttpContextAccessor();
         }

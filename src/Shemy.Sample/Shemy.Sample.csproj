@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Shemy.Http\Shemy.Http.csproj" />
+      <ProjectReference Include="..\Shemy\Shemy.csproj" />
     </ItemGroup>
 
 </Project>

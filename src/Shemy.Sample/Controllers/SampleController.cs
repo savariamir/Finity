@@ -33,7 +33,7 @@ namespace Shemy.Http.Controllers
             if (!response.IsSuccessStatusCode) throw new Exception();
 
 
-            var responseStream = await response.Content.ReadAsStringAsync();
+            var responseStream =await  response.Content.ReadAsStringAsync();
             var data = JsonSerializer.Deserialize<object>(responseStream);
 
 
