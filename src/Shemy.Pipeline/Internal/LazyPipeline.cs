@@ -30,10 +30,9 @@ namespace Shemy.Pipeline.Internal
             var index = 0;
 
             var middlewares = _middlewareTypes.Where(middlewareType =>
-                    _options.Types.Contains(middlewareType))
-                .ToArray();
-
-
+                                                  _options.Types.Contains(middlewareType))
+                                              .ToArray();
+            
             Task<TResponse> Next()
             {
                 if (middlewares.Length == index)

@@ -21,7 +21,8 @@ namespace Shemy.CircuitBreaker
                                                         Func<Task<HttpResponseMessage>> next,
                                                         CancellationToken cancellationToken)
         {
-            return await _engine.ExecuteAsync(next);
+            
+            return await _engine.ExecuteAsync(request,next);
         }
     }
 }

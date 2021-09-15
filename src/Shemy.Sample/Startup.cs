@@ -39,7 +39,12 @@ namespace Shemy.Http
                     {
                         a.RetryCount = 5;
                         a.SleepDurationRetry = TimeSpan.FromSeconds(1);
-                    }).AddCircuitBreaker();
+                    }).AddCircuitBreaker(a =>
+                    {
+                        a.DurationOfBreak = TimeSpan.Zero;
+                        a.ExceptionsAllowedBeforeBreaking = 2;
+                        a.SuccessAllowedBeforeClosing = 1;
+                    });
 
             //
             services.AddAnshanHttpClient("test1")
@@ -47,10 +52,14 @@ namespace Shemy.Http
                     {
                         a.RetryCount = 2;
                         a.SleepDurationRetry = TimeSpan.FromSeconds(200);
-                    })
-                    // .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
-                    // .SetHandlerLifetime(TimeSpan.FromSeconds(100))
-                    .AddCircuitBreaker();
+                    }).AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); });
+            // .SetHandlerLifetime(TimeSpan.FromSeconds(100))
+            // .AddCircuitBreaker(a =>
+            // {
+            //     a.DurationOfBreak = TimeSpan.Zero;
+            //     a.ExceptionsAllowedBeforeBreaking = 2;
+            //     a.SuccessAllowedBeforeClosing = 1;
+            // });
 
 
             // services.AddHttpClient("csharpcorner")

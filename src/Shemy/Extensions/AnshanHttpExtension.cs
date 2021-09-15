@@ -19,11 +19,7 @@ namespace Shemy.Extensions
         public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name,
                                                              Action<HttpClient> configureClient)
         {
-            services.AddTransient<MemoryCacheMiddleware>();
-            services.AddTransient<CircuitBreakerMiddleware>();
-            services.AddTransient<RetryMiddleware>();
             services.AddTransient<DefaultMiddleware>();
-
 
             var middlewares = new List<Type>
             {
@@ -37,7 +33,7 @@ namespace Shemy.Extensions
             var builder = services.AddHttpClient(name, configureClient);
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(DefaultMiddleware)));
-            
+
             builder.AddHttpMessageHandler((sp) =>
             {
                 var pipeline =
@@ -50,9 +46,6 @@ namespace Shemy.Extensions
 
         public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name = "")
         {
-            services.AddTransient<MemoryCacheMiddleware>();
-            services.AddTransient<CircuitBreakerMiddleware>();
-            services.AddTransient<RetryMiddleware>();
             services.AddTransient<DefaultMiddleware>();
 
             var middlewares = new List<Type>
@@ -67,8 +60,8 @@ namespace Shemy.Extensions
             var builder = services.AddHttpClient(name);
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(DefaultMiddleware)));
-            
-            
+
+
             builder.AddHttpMessageHandler((sp) =>
             {
                 var pipeline =
@@ -95,11 +88,8 @@ namespace Shemy.Extensions
 
 
             builder.Services.AddTransient<IClock, SystemClock>();
-
-
+            builder.Services.AddTransient<RetryMiddleware>();
             builder.Services.Configure(builder.Name, retryConfigure);
-
-
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(RetryMiddleware)));
 
@@ -110,6 +100,7 @@ namespace Shemy.Extensions
         public static IHttpClientBuilder AddCache(this IHttpClientBuilder builder,
                                                   Action<CacheConfigure> cacheConfigure)
         {
+            builder.Services.AddTransient<MemoryCacheMiddleware>();
             builder.Services.AddMemoryCache();
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(MemoryCacheMiddleware)));
@@ -117,11 +108,18 @@ namespace Shemy.Extensions
             return builder;
         }
 
-        public static IHttpClientBuilder AddCircuitBreaker(this IHttpClientBuilder builder)
+        public static IHttpClientBuilder AddCircuitBreaker(this IHttpClientBuilder builder,
+                                                           Action<CircuitBreakerConfigure> configure)
         {
+            builder.Services.AddTransient<CircuitBreakerMiddleware>();
             builder.Services.AddTransient<ICircuitBreakerEngine, CircuitBreakerEngine>();
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(CircuitBreakerMiddleware)));
+
+            builder.Services.AddSingleton<ICircuitBreakerMetric, CircuitBreakerMetric>();
+
+            builder.Services.Configure(builder.Name, configure);
+
             return builder;
         }
     }
