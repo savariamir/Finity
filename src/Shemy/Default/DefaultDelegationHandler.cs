@@ -12,7 +12,8 @@ namespace Shemy.Default
         private readonly IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> _pipeline;
         private readonly string _clientName;
 
-        public DefaultDelegationHandler(string clientName, IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> serviceProvider)
+        public DefaultDelegationHandler(string clientName,
+            IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> serviceProvider)
         {
             _clientName = clientName;
             _pipeline = serviceProvider;
