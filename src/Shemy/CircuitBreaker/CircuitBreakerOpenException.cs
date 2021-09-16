@@ -2,14 +2,14 @@ using System;
 
 namespace Shemy.CircuitBreaker
 {
-    public class CircuitBreakerOpenException : Exception
+    internal class CircuitBreakerOpenException : Exception
     {
         public CircuitBreakerOpenException(string message) : base(message)
         {
         }
     }
     
-    public class CircuitBreakerException : Exception
+    internal class CircuitBreakerException : Exception
     {
         public CircuitBreakerException(string message) : base(message)
         {

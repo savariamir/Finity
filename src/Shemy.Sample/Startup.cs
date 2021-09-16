@@ -30,29 +30,30 @@ namespace Shemy.Http
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Shemy.Sample", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Shemy.Sample", Version = "v1"});
             });
 
             services.AddAnshanHttpClient("test", a => { })
-                    .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
-                    .AddRetry(a =>
-                    {
-                        a.RetryCount = 5;
-                        a.SleepDurationRetry = TimeSpan.FromSeconds(1);
-                    }).AddCircuitBreaker(a =>
-                    {
-                        a.DurationOfBreak = TimeSpan.Zero;
-                        a.ExceptionsAllowedBeforeBreaking = 2;
-                        a.SuccessAllowedBeforeClosing = 1;
-                    });
-
-            //
+                .AddBulkhead(a => { a.MaxConcurrentCalls = 12; })
+                .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
+                .AddRetry(a =>
+                {
+                    a.RetryCount = 5;
+                    a.SleepDurationRetry = TimeSpan.FromSeconds(1);
+                })
+                .AddCircuitBreaker(a =>
+                {
+                    a.DurationOfBreak = TimeSpan.Zero;
+                    a.ExceptionsAllowedBeforeBreaking = 2;
+                    a.SuccessAllowedBeforeClosing = 1;
+                });
+            
             services.AddAnshanHttpClient("test1")
-                    .AddRetry(a =>
-                    {
-                        a.RetryCount = 2;
-                        a.SleepDurationRetry = TimeSpan.FromSeconds(200);
-                    }).AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); });
+                .AddRetry(a =>
+                {
+                    a.RetryCount = 2;
+                    a.SleepDurationRetry = TimeSpan.FromSeconds(200);
+                }).AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); });
             // .SetHandlerLifetime(TimeSpan.FromSeconds(100))
             // .AddCircuitBreaker(a =>
             // {
@@ -78,12 +79,12 @@ namespace Shemy.Http
         private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
-                   // HttpRequestException, 5XX and 408  
-                   .HandleTransientHttpError()
-                   // 404  
-                   .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                   // Retry two times after delay  
-                   .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                    // HttpRequestException, 5XX and 408  
+                    .HandleTransientHttpError()
+                    // 404  
+                    .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    // Retry two times after delay  
+                    .WaitAndRetryAsync(2, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
                 ;
         }
 

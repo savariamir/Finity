@@ -1,6 +1,6 @@
 namespace Shemy.CircuitBreaker
 {
-    public enum CircuitBreakerState
+    internal enum CircuitBreakerState
     {
         Closed,
         Open,

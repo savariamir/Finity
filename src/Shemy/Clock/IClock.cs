@@ -12,5 +12,7 @@ namespace Shemy.Clock
         /// By default this will be a call to <see cref="M:Task.Delay"/> taking a <see cref="CancellationToken"/>
         /// </summary>
         Task SleepAsync(TimeSpan timeSpan, CancellationToken cancellationToken);
+
+        public DateTime UtcNow();
     }
 }

@@ -10,7 +10,7 @@ namespace Shemy.Clock
         /// Allows the setting of a custom DateTime.UtcNow implementation for testing.
         /// By default this will be a call to <see cref="DateTime.UtcNow"/>
         /// </summary>
-        public  Func<DateTime> UtcNow = () => DateTime.UtcNow;
+        public DateTime UtcNow() => DateTime.UtcNow;
 
         /// <summary>
         /// Allows the setting of a custom DateTimeOffset.UtcNow implementation for testing.

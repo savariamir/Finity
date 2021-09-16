@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Shemy.Bulkhead
+namespace Shemy.Locking
 {
     public static class SemaphoreExtension
     {

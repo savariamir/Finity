@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
+using Shemy.Bulkhead;
 using Shemy.Caching;
 using Shemy.CircuitBreaker;
 using Shemy.Clock;
@@ -26,6 +28,7 @@ namespace Shemy.Extensions
                 typeof(MemoryCacheMiddleware),
                 typeof(CircuitBreakerMiddleware),
                 typeof(RetryMiddleware),
+                typeof(BulkheadMiddleware),
                 typeof(DefaultMiddleware),
             };
 
@@ -53,6 +56,7 @@ namespace Shemy.Extensions
                 typeof(MemoryCacheMiddleware),
                 typeof(CircuitBreakerMiddleware),
                 typeof(RetryMiddleware),
+                typeof(BulkheadMiddleware),
                 typeof(DefaultMiddleware),
             };
 
@@ -114,9 +118,27 @@ namespace Shemy.Extensions
             builder.Services.AddTransient<CircuitBreakerMiddleware>();
             builder.Services.AddTransient<ICircuitBreakerEngine, CircuitBreakerEngine>();
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
-                options => options.Types.Add(typeof(CircuitBreakerMiddleware)));
+                options =>
+                {
+                    options.Types.Add(typeof(CircuitBreakerMiddleware));
+                });
 
             builder.Services.AddSingleton<ICircuitBreakerMetric, CircuitBreakerMetric>();
+            builder.Services.Configure(builder.Name, configure);
+
+            return builder;
+        }
+        
+        public static IHttpClientBuilder AddBulkhead(this IHttpClientBuilder builder,
+            Action<BulkheadConfigure> configure)
+        {
+            builder.Services.AddTransient<BulkheadMiddleware>();
+            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
+                options =>
+                {
+                    options.Types.Add(typeof(BulkheadMiddleware));
+                    options.SemaphoreSlims.TryAdd(builder.Name, new SemaphoreSlim(2));
+                });
 
             builder.Services.Configure(builder.Name, configure);
 

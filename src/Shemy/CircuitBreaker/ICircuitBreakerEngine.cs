@@ -5,8 +5,9 @@ using Shemy.Request;
 
 namespace Shemy.CircuitBreaker
 {
-    internal interface ICircuitBreakerEngine 
+    internal interface ICircuitBreakerEngine
     {
-        Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,Func<Task<HttpResponseMessage>> next);
+        Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
+            Func<Task<HttpResponseMessage>> next);
     }
 }

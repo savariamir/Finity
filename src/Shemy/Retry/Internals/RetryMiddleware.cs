@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Shemy.Clock;
+using Shemy.HttpResponse;
 using Shemy.Pipeline.Abstractions;
 using Shemy.Request;
 using Shemy.Retry.Configurations;
@@ -34,14 +35,8 @@ namespace Shemy.Retry.Internals
             {
                 var response = await next();
 
-                if (response.IsSuccessStatusCode)
+                if (response.IsSucceed())
                     return response;
-
-                if (response.StatusCode == HttpStatusCode.BadRequest)
-                {
-                    // Don't reattempt a bad request
-                    return response;
-                }
 
                 if (retryConfigure.SleepDurationRetry > TimeSpan.Zero)
                     await _clock.SleepAsync(retryConfigure.SleepDurationRetry , cancellationToken);

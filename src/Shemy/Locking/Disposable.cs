@@ -1,6 +1,6 @@
 using System;
 
-namespace Shemy.Bulkhead
+namespace Shemy.Locking
 {
     public class Disposable : IDisposable
     {

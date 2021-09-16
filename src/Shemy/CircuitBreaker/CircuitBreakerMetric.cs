@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Concurrent;
+using Shemy.Clock;
 
 namespace Shemy.CircuitBreaker
 {
-    public class CircuitBreakerMetric : ICircuitBreakerMetric
+    internal class CircuitBreakerMetric : ICircuitBreakerMetric
     {
         private readonly ConcurrentDictionary<string, MetricItem> _metrics = new();
+        private readonly IClock _clock;
+
+        public CircuitBreakerMetric(IClock clock)
+        {
+            _clock = clock;
+        }
 
         public void SetState(CircuitBreakerState state, string name)
         {
@@ -47,7 +54,7 @@ namespace Shemy.CircuitBreaker
                 {
                     Failures = value.Failures + 1,
                     Successes = value.Successes,
-                    LastFailureDateTimeUtc = DateTime.UtcNow
+                    LastFailureDateTimeUtc = _clock.UtcNow()
                 };
                 _metrics.TryUpdate(name, value, newValue);
             }
@@ -96,33 +103,5 @@ namespace Shemy.CircuitBreaker
                 return value.CircuitBreakerState;
             }
         }
-    }
-
-    public interface ICircuitBreakerMetric
-    {
-        void SetState(CircuitBreakerState state,string name);
-        void IncrementSuccess(string name);
-        void IncrementFailure(string name);
-        int GetFailures(string name);
-        int GetSuccess(string name);
-        DateTime GetLastFailureDateTimeUtc(string name);
-        void Reset(string name);
-        CircuitBreakerState GetState(string name);
-    }
-
-    public class MetricItem
-    {
-        public int Successes { get; set; }
-
-        public int Failures { get; set; }
-
-        public int Total
-        {
-            get { return Successes + Failures; }
-        }
-
-        public CircuitBreakerState CircuitBreakerState { get; set; } = CircuitBreakerState.Closed;
-
-        public DateTime LastFailureDateTimeUtc { get; set; }
     }
 }

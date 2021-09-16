@@ -16,7 +16,6 @@ namespace Shemy.Default
             CancellationToken cancellationToken)
         {
             var response = await request.SendAsync();
-
             return response;
         }
     }
