@@ -2,12 +2,13 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Shemy.CircuitBreaker.Abstractions;
 using Shemy.Pipeline.Abstractions;
 using Shemy.Request;
 
-namespace Shemy.CircuitBreaker
+namespace Shemy.CircuitBreaker.Internals
 {
-    internal class CircuitBreakerMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class CircuitBreakerMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
         private readonly ICircuitBreakerEngine _engine;
 

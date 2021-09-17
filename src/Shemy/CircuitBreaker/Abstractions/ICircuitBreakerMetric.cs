@@ -1,16 +1,13 @@
 using System;
 
-namespace Shemy.CircuitBreaker
+namespace Shemy.CircuitBreaker.Abstractions
 {
-    internal interface ICircuitBreakerMetric
+    public interface ICircuitBreakerMetric
     {
-        void SetState(CircuitBreakerState state,string name);
         void IncrementSuccess(string name);
         void IncrementFailure(string name);
         int GetFailures(string name);
         int GetSuccess(string name);
         DateTime GetLastFailureDateTimeUtc(string name);
-        void Reset(string name);
-        CircuitBreakerState GetState(string name);
     }
 }

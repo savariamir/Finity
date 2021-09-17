@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace Shemy.HttpResponse
+namespace Shemy.Extensions
 {
     public static class HttpResponseExtension
     {

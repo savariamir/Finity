@@ -7,7 +7,7 @@ using Shemy.Request;
 
 namespace Shemy.Default
 {
-    internal class DefaultDelegationHandler : DelegatingHandler
+    public class DefaultDelegationHandler : DelegatingHandler
     {
         private readonly IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> _pipeline;
         private readonly string _clientName;

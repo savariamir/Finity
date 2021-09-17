@@ -2,9 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Shemy.Locking;
-using Shemy.Pipeline;
 using Shemy.Pipeline.Abstractions;
 using Shemy.Request;
 
@@ -12,27 +10,22 @@ namespace Shemy.Bulkhead
 {
     public class BulkheadMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
-        private readonly IOptionsSnapshot<AnshanFactoryOptions> _options;
+        private readonly IBulkheadLockProvider _bulkheadLockProvider;
 
-        public BulkheadMiddleware(IOptionsSnapshot<AnshanFactoryOptions> options)
+        public BulkheadMiddleware(IBulkheadLockProvider bulkheadLockProvider)
         {
-            _options = options;
+            _bulkheadLockProvider = bulkheadLockProvider;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, IPipelineContext context,
+        public async Task<HttpResponseMessage> RunAsync(
+            AnshanHttpRequestMessage request,
+            IPipelineContext context,
             Func<Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
-            _options.Get(request.ClientName)
-                .SemaphoreSlims.TryGetValue(request.ClientName, out var semaphore);
-            
-            lock (request.ClientName)
-            {
-                if (semaphore is {CurrentCount: 0})
-                    return new HttpResponseMessage();
-            }
-
-            using (await semaphore.EnterAsync())
+            using (await _bulkheadLockProvider
+                .TrySemaphore(request.ClientName)
+                .EnterAsync(cancellationToken))
             {
                 return await next();
             }

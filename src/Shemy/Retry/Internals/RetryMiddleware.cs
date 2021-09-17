@@ -1,11 +1,10 @@
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Shemy.Clock;
-using Shemy.HttpResponse;
+using Shemy.Extensions;
 using Shemy.Pipeline.Abstractions;
 using Shemy.Request;
 using Shemy.Retry.Configurations;
@@ -13,7 +12,7 @@ using Shemy.Retry.Exceptions;
 
 namespace Shemy.Retry.Internals
 {
-    internal class RetryMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class RetryMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IClock _clock;
         private readonly IOptionsSnapshot<RetryConfigure> _options;

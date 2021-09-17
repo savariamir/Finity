@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Concurrent;
+using Shemy.CircuitBreaker.Abstractions;
 using Shemy.Clock;
 
-namespace Shemy.CircuitBreaker
+namespace Shemy.CircuitBreaker.Internals
 {
-    internal class CircuitBreakerMetric : ICircuitBreakerMetric
+    public class CircuitBreakerMetric : ICircuitBreakerMetric
     {
         private readonly ConcurrentDictionary<string, MetricItem> _metrics = new();
         private readonly IClock _clock;
@@ -12,22 +13,6 @@ namespace Shemy.CircuitBreaker
         public CircuitBreakerMetric(IClock clock)
         {
             _clock = clock;
-        }
-
-        public void SetState(CircuitBreakerState state, string name)
-        {
-            lock (name)
-            {
-                var value = _metrics.GetOrAdd(name, key => new MetricItem());
-                var newValue = new MetricItem
-                {
-                    Failures = value.Failures,
-                    Successes = value.Successes,
-                    LastFailureDateTimeUtc =value.LastFailureDateTimeUtc,
-                    CircuitBreakerState = state
-                };
-                _metrics.TryUpdate(name, value, newValue);
-            }
         }
 
         public void IncrementSuccess(string name)
@@ -84,23 +69,6 @@ namespace Shemy.CircuitBreaker
             {
                 var value = _metrics.GetOrAdd(name, key => new MetricItem());
                 return value.LastFailureDateTimeUtc;
-            }
-        }
-
-        public void Reset(string name)
-        {
-            lock (name)
-            {
-                _metrics.TryRemove(name, out _);
-            }
-        }
-
-        public CircuitBreakerState GetState(string name)
-        {
-            lock (name)
-            {
-                var value = _metrics.GetOrAdd(name, key => new MetricItem());
-                return value.CircuitBreakerState;
             }
         }
     }

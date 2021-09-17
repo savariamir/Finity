@@ -1,5 +1,3 @@
-using System.Threading;
-
 namespace Shemy.Bulkhead
 {
     public class BulkheadConfigure

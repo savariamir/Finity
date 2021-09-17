@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Shemy.Clock
 {
-    internal interface IClock
+    public interface IClock
     {
         // Func<TimeSpan, CancellationToken, Task> SleepAsync ;
         /// <summary>

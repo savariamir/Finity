@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Shemy.Bulkhead;
 using Shemy.Caching;
-using Shemy.CircuitBreaker;
+using Shemy.CircuitBreaker.Configurations;
+using Shemy.CircuitBreaker.Extensions;
+using Shemy.CircuitBreaker.Internals;
 using Shemy.Clock;
 using Shemy.Default;
 using Shemy.Pipeline;
@@ -14,12 +15,12 @@ using Shemy.Request;
 using Shemy.Retry.Configurations;
 using Shemy.Retry.Internals;
 
-namespace Shemy.Extensions
+namespace Shemy.Extension
 {
     public static class AnshanHttpExtension
     {
         public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name,
-                                                             Action<HttpClient> configureClient)
+            Action<HttpClient> configureClient)
         {
             services.AddTransient<DefaultMiddleware>();
 
@@ -78,7 +79,7 @@ namespace Shemy.Extensions
 
 
         public static IHttpClientBuilder AddRetry(this IHttpClientBuilder builder,
-                                                  Action<RetryConfigure> retryConfigure)
+            Action<RetryConfigure> retryConfigure)
         {
             if (builder == null)
             {
@@ -102,7 +103,7 @@ namespace Shemy.Extensions
 
 
         public static IHttpClientBuilder AddCache(this IHttpClientBuilder builder,
-                                                  Action<CacheConfigure> cacheConfigure)
+            Action<CacheConfigure> cacheConfigure)
         {
             builder.Services.AddTransient<MemoryCacheMiddleware>();
             builder.Services.AddMemoryCache();
@@ -113,32 +114,23 @@ namespace Shemy.Extensions
         }
 
         public static IHttpClientBuilder AddCircuitBreaker(this IHttpClientBuilder builder,
-                                                           Action<CircuitBreakerConfigure> configure)
+            Action<CircuitBreakerConfigure> configure)
         {
-            builder.Services.AddTransient<CircuitBreakerMiddleware>();
-            builder.Services.AddTransient<ICircuitBreakerEngine, CircuitBreakerEngine>();
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
-                options =>
-                {
-                    options.Types.Add(typeof(CircuitBreakerMiddleware));
-                });
-
-            builder.Services.AddSingleton<ICircuitBreakerMetric, CircuitBreakerMetric>();
-            builder.Services.Configure(builder.Name, configure);
-
+            builder.CircuitBreaker(configure);
             return builder;
         }
-        
+
         public static IHttpClientBuilder AddBulkhead(this IHttpClientBuilder builder,
             Action<BulkheadConfigure> configure)
         {
             builder.Services.AddTransient<BulkheadMiddleware>();
+
+            builder.Services.AddSingleton<IBulkheadLockProvider>(_ =>
+                new BulkheadLockProvider(builder.Name, 2));
+
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
-                options =>
-                {
-                    options.Types.Add(typeof(BulkheadMiddleware));
-                    options.SemaphoreSlims.TryAdd(builder.Name, new SemaphoreSlim(2));
-                });
+                options => { options.Types.Add(typeof(BulkheadMiddleware)); });
+
 
             builder.Services.Configure(builder.Name, configure);
 

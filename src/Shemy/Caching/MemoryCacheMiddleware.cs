@@ -9,7 +9,7 @@ using Shemy.Request;
 
 namespace Shemy.Caching
 {
-    internal class MemoryCacheMiddleware: IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
+    public class MemoryCacheMiddleware: IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
     {
         private readonly IMemoryCache _cache;
         private readonly IOptionsSnapshot<CacheConfigure> _options;

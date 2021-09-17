@@ -1,45 +1,39 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Shemy.HttpResponse;
+using Shemy.CircuitBreaker.Abstractions;
+using Shemy.CircuitBreaker.Configurations;
+using Shemy.CircuitBreaker.Exceptions;
+using Shemy.Extensions;
 using Shemy.Locking;
 using Shemy.Request;
 
-namespace Shemy.CircuitBreaker
+namespace Shemy.CircuitBreaker.Internals
 {
-    internal class CircuitBreakerEngine : ICircuitBreakerEngine
+    public class CircuitBreakerEngine : ICircuitBreakerEngine
     {
         private readonly IOptionsSnapshot<CircuitBreakerConfigure> _options;
+        private readonly ICircuitBreakerStateProvider _circuitBreakerStateProvider;
+        private readonly ICircuitBreakerLockProvider _lockProvider;
         private readonly ICircuitBreakerMetric _metric;
 
-        public CircuitBreakerEngine(IOptionsSnapshot<CircuitBreakerConfigure> options, ICircuitBreakerMetric metric)
+        public CircuitBreakerEngine(IOptionsSnapshot<CircuitBreakerConfigure> options,
+            ICircuitBreakerLockProvider lockProvider, ICircuitBreakerStateProvider circuitBreakerStateProvider, ICircuitBreakerMetric metric)
         {
             _options = options;
+            _lockProvider = lockProvider;
+            _circuitBreakerStateProvider = circuitBreakerStateProvider;
             _metric = metric;
         }
 
-        private void Trip(string name)
-        {
-            _metric.SetState(CircuitBreakerState.Open, name);
-        }
-
-
-        private void Reset(string name)
-        {
-            _metric.SetState(CircuitBreakerState.Closed, name);
-        }
-
-        private void HalfOpen(string name)
-        {
-            _metric.SetState(CircuitBreakerState.Closed, name);
-        }
 
         public async Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
             Func<Task<HttpResponseMessage>> next)
         {
-            if (_metric.GetState(request.ClientName) == CircuitBreakerState.Closed)
+            if (_circuitBreakerStateProvider.GetState(request.ClientName) == CircuitBreakerState.Closed)
             {
                 return await ExecuteIfCircuitIsCloseAsync(next, request.ClientName);
             }
@@ -50,12 +44,12 @@ namespace Shemy.CircuitBreaker
             return await TryExecuteIfCircuitIsOpenAsync(next, request.ClientName);
         }
 
-        private void ThrowExceptionIfAnotherRequestHasAlreadyEntered(string name)
+        private SemaphoreSlim TrySemaphore(string name)
         {
-            var semaphore = _options.Get(name).SemaphoreSlim;
             lock (name)
             {
-                if (semaphore is not {CurrentCount: 0}) return;
+                var semaphore = _lockProvider.TrySemaphore(name);
+                if (semaphore is not {CurrentCount: 0}) return semaphore;
 
                 _metric.IncrementFailure(name);
                 throw new CircuitBreakerOpenException("");
@@ -65,10 +59,7 @@ namespace Shemy.CircuitBreaker
         private async Task<HttpResponseMessage> TryExecuteIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
             string name)
         {
-            ThrowExceptionIfAnotherRequestHasAlreadyEntered(name);
-
-            var semaphore = _options.Get(name).SemaphoreSlim;
-            using (await semaphore.EnterAsync())
+            using (await TrySemaphore(name).EnterAsync())
             {
                 var response = await ExecuteIfCircuitIsOpenAsync(next, name);
 
@@ -93,7 +84,8 @@ namespace Shemy.CircuitBreaker
                 throw new CircuitBreakerOpenException("");
         }
 
-        private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync(Func<Task<HttpResponseMessage>> next, string name)
+        private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync(Func<Task<HttpResponseMessage>> next,
+            string name)
         {
             var response = await next();
 
@@ -104,7 +96,7 @@ namespace Shemy.CircuitBreaker
             _metric.IncrementFailure(name);
 
             if (configure.ExceptionsAllowedBeforeBreaking < _metric.GetFailures(name))
-                Trip(name);
+                _circuitBreakerStateProvider.Trip(name);
 
             return response;
         }
@@ -113,7 +105,7 @@ namespace Shemy.CircuitBreaker
             string name)
         {
             // Set the circuit breaker state to HalfOpen.
-            HalfOpen(name);
+            _circuitBreakerStateProvider.HalfOpen(name);
 
             // Attempt the operation.
             var response = await next();
@@ -129,19 +121,19 @@ namespace Shemy.CircuitBreaker
                 _metric.IncrementSuccess(name);
 
                 if (configure.SuccessAllowedBeforeClosing <= _metric.GetSuccess(name))
-                    Reset(name);
+                    _circuitBreakerStateProvider.Reset(name);
 
                 return response;
             }
 
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
             {
-                Reset(name);
+                _circuitBreakerStateProvider.Reset(name);
                 return response;
             }
 
             _metric.IncrementFailure(name);
-            Trip(name);
+            _circuitBreakerStateProvider.Trip(name);
 
             return response;
         }

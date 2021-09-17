@@ -7,12 +7,14 @@ using Shemy.Request;
 
 namespace Shemy.Metrics
 {
-    public class MetricMiddleware: IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class MetricMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
-        public Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, IPipelineContext context, Func<Task<HttpResponseMessage>> next,
+        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, IPipelineContext context,
+            Func<Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var response = await next();
+            return response;
         }
     }
 }

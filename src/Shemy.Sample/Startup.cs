@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Extensions.Http;
+using Shemy.Extension;
 using Shemy.Extensions;
 
 // using Polly;
@@ -35,7 +36,7 @@ namespace Shemy.Http
 
             services.AddAnshanHttpClient("test", a => { })
                 .AddBulkhead(a => { a.MaxConcurrentCalls = 12; })
-                .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
+                // .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
                 .AddRetry(a =>
                 {
                     a.RetryCount = 5;
