@@ -1,4 +1,4 @@
-namespace Shemy.AddressBuilder.Abstractions
+namespace Shemy.Address.Abstractions
 {
     public interface IGenerate
     {

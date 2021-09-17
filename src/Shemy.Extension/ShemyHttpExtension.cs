@@ -111,5 +111,14 @@ namespace Shemy.Extension
 
             return builder;
         }
+
+        public static IHttpClientBuilder AddAuthentication(
+            this IHttpClientBuilder builder,
+            Action<AuthenticationConfigure> configure)
+        {
+            builder.Authentication(configure);
+
+            return builder;
+        }
     }
 }

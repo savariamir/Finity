@@ -1,6 +1,6 @@
 ﻿using System;
 using FluentAssertions;
-using Shemy.AddressBuilder.Exceptions;
+using Shemy.Address.Exceptions;
 using Xunit;
 
 namespace Shemy.Tests.Unit
@@ -10,7 +10,7 @@ namespace Shemy.Tests.Unit
         [Fact]
         public void Should_generate_a_uri_with_path()
         {
-            var uri = AddressBuilder.Builders.AddressBuilder
+            var uri = Address.Builders.AddressBuilder
                                     .Create()
                                     .SetBaseAddress("https://www.example.com")
                                     .SetPath("name1")
@@ -24,7 +24,7 @@ namespace Shemy.Tests.Unit
         [Fact]
         public void Should_generate_a_uri_with_query_params()
         {
-            var uri = AddressBuilder.Builders.AddressBuilder
+            var uri = Address.Builders.AddressBuilder
                                     .Create()
                                     .SetBaseAddress("https://www.example.com")
                                     .SetQueryParam("name1", "value1")
@@ -38,7 +38,7 @@ namespace Shemy.Tests.Unit
         [Fact]
         public void Should_generate_a_uri_with_path_and_query_params()
         {
-            var uri = AddressBuilder.Builders.AddressBuilder
+            var uri = Address.Builders.AddressBuilder
                                     .Create()
                                     .SetBaseAddress("https://www.example.com")
                                     .SetPath("name1")
@@ -55,7 +55,7 @@ namespace Shemy.Tests.Unit
         [Fact]
         public void Should_generate_a_uri_with_query_params_array()
         {
-            var uri = AddressBuilder.Builders.AddressBuilder
+            var uri = Address.Builders.AddressBuilder
                                     .Create()
                                     .SetBaseAddress("https://www.example.com")
                                     .SetQueryParam("name1", "1", "2", "3")
@@ -73,7 +73,7 @@ namespace Shemy.Tests.Unit
         public void Should_throw_AbsoluteUrlException_when_domain_is_not_correct(string domain)
         {
             Action func = () =>
-                AddressBuilder.Builders.AddressBuilder
+                Address.Builders.AddressBuilder
                               .Create()
                               .SetBaseAddress(domain)
                               .Generate();

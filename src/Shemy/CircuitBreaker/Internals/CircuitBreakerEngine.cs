@@ -33,15 +33,17 @@ namespace Shemy.CircuitBreaker.Internals
         public async Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
             Func<Task<HttpResponseMessage>> next)
         {
-            if (_circuitBreakerStateProvider.GetState(request.ClientName) == CircuitBreakerState.Closed)
+            if (_circuitBreakerStateProvider.GetState(request.Name) == CircuitBreakerState.Closed)
             {
-                return await ExecuteIfCircuitIsCloseAsync(next, request.ClientName);
+                return await ExecuteIfCircuitIsCloseAsync(next, request.Name);
             }
+            
+            //Report that circuit is open
 
-            ThrowExceptionIfTimeoutExpired(request.ClientName);
+            ThrowExceptionIfTimeoutExpired(request.Name);
 
 
-            return await TryExecuteIfCircuitIsOpenAsync(next, request.ClientName);
+            return await TryExecutingIfCircuitIsOpenAsync(next, request.Name);
         }
 
         private SemaphoreSlim TrySemaphore(string name)
@@ -49,14 +51,17 @@ namespace Shemy.CircuitBreaker.Internals
             lock (name)
             {
                 var semaphore = _lockProvider.TrySemaphore(name);
-                if (semaphore is not {CurrentCount: 0}) return semaphore;
+                if (semaphore is not {CurrentCount: 0})
+                {
+                    return semaphore;
+                }
 
                 _metric.IncrementFailure(name);
                 throw new CircuitBreakerOpenException("");
             }
         }
 
-        private async Task<HttpResponseMessage> TryExecuteIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
+        private async Task<HttpResponseMessage> TryExecutingIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
             string name)
         {
             using (await TrySemaphore(name).EnterAsync())
@@ -81,22 +86,28 @@ namespace Shemy.CircuitBreaker.Internals
                 new DateTime(configure.DurationOfBreak.Ticks + _metric.GetLastFailureDateTimeUtc(name).Ticks);
 
             if (dateTime >= DateTime.UtcNow)
+            {
                 throw new CircuitBreakerOpenException("");
+            }
         }
 
         private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync(Func<Task<HttpResponseMessage>> next,
             string name)
         {
             var response = await next();
-
             if (response.IsSucceed())
+            {
                 return response;
+            }
 
             var configure = _options.Get(name);
             _metric.IncrementFailure(name);
 
             if (configure.ExceptionsAllowedBeforeBreaking < _metric.GetFailures(name))
+            {
+                //report: Circuit is opened
                 _circuitBreakerStateProvider.Trip(name);
+            }
 
             return response;
         }
@@ -106,32 +117,22 @@ namespace Shemy.CircuitBreaker.Internals
         {
             // Set the circuit breaker state to HalfOpen.
             _circuitBreakerStateProvider.HalfOpen(name);
-
-            // Attempt the operation.
+            
             var response = await next();
-
             if (response.IsSucceed())
             {
-                // If this action succeeds, reset the state and allow other operations.
-                // In reality, instead of immediately returning to the Closed state, a counter
-                // here would record the number of successful operations and return the
-                // circuit breaker to the Closed state only after a specified number succeed.
-
                 var configure = _options.Get(name);
                 _metric.IncrementSuccess(name);
 
                 if (configure.SuccessAllowedBeforeClosing <= _metric.GetSuccess(name))
+                {
+                    //circuit is closed
                     _circuitBreakerStateProvider.Reset(name);
+                }
 
                 return response;
             }
-
-            if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.NotFound)
-            {
-                _circuitBreakerStateProvider.Reset(name);
-                return response;
-            }
-
+            
             _metric.IncrementFailure(name);
             _circuitBreakerStateProvider.Trip(name);
 

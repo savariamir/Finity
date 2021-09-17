@@ -1,4 +1,4 @@
-namespace Shemy.AddressBuilder.Internals
+namespace Shemy.Address.Internals
 {
     internal class PathItem
     {

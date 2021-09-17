@@ -10,7 +10,6 @@ namespace Shemy.Prometheus
         private readonly ConcurrentDictionary<string, Gauge> _gauges = new();
         private readonly ConcurrentDictionary<string, Gauge> _lastExecutionDateTime = new();
 
-
         public void Report(string name, int millisecond)
         {
             RegisterAverageRunning(name, millisecond);

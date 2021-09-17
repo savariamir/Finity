@@ -13,6 +13,16 @@ namespace Shemy.CircuitBreaker.Extensions
             this IHttpClientBuilder builder,
             Action<CircuitBreakerConfigure> configure)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+            
             builder.Services.AddTransient<CircuitBreakerMiddleware>();
             builder.Services.AddTransient<ICircuitBreakerEngine, CircuitBreakerEngine>();
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,

@@ -21,7 +21,7 @@ namespace Shemy.Authentication
             Func<Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
-            var token = await _tokenProvider.GetToken(request.ClientName, cancellationToken);
+            var token = await _tokenProvider.GetToken(request.Name, cancellationToken);
             request.HttpRequest.Headers.Authorization = 
                 new AuthenticationHeaderValue("Bearer", token);
 

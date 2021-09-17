@@ -22,7 +22,6 @@ namespace Shemy.Retry
                 throw new ArgumentNullException(nameof(retryConfigure));
             }
 
-
             builder.Services.AddTransient<IClock, SystemClock>();
             builder.Services.AddTransient<RetryMiddleware>();
             builder.Services.Configure(builder.Name, retryConfigure);

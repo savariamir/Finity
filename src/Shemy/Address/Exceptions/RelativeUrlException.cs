@@ -1,4 +1,4 @@
-namespace Shemy.AddressBuilder.Exceptions
+namespace Shemy.Address.Exceptions
 {
     public class RelativeUrlException : System.Exception
     {

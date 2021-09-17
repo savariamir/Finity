@@ -24,7 +24,7 @@ namespace Shemy.Bulkhead
             CancellationToken cancellationToken)
         {
             using (await _bulkheadLockProvider
-                .TrySemaphore(request.ClientName)
+                .TrySemaphore(request.Name)
                 .EnterAsync(cancellationToken))
             {
                 return await next();

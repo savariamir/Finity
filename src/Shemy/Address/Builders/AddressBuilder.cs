@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Shemy.AddressBuilder.Abstractions;
-using Shemy.AddressBuilder.Exceptions;
-using Shemy.AddressBuilder.Internals;
+using Shemy.Address.Abstractions;
+using Shemy.Address.Exceptions;
+using Shemy.Address.Internals;
 
-namespace Shemy.AddressBuilder.Builders
+namespace Shemy.Address.Builders
 {
-    public class AddressBuilder : IPath, IQueryParam, IUriBuilder, IGenerate
+    public class AddressBuilder : IPath, IQueryParam, IAddressBuilder, IGenerate
     {
         private readonly List<PathItem> _pathItems;
         private readonly List<QueryParamItem> _queryParams;
@@ -19,7 +19,7 @@ namespace Shemy.AddressBuilder.Builders
             _queryParams = new List<QueryParamItem>();
         }
 
-        public static IUriBuilder Create() => new AddressBuilder();
+        public static IAddressBuilder Create() => new AddressBuilder();
 
         public IPath SetBaseAddress(string domain)
         {

@@ -8,6 +8,6 @@ namespace Shemy.Request
     {
         public Func<Task<HttpResponseMessage>> SendAsync { set; get; }
         public HttpRequestMessage HttpRequest { set; get; }  
-        public string ClientName { set; get; }
+        public string Name { set; get; }
     }
 }

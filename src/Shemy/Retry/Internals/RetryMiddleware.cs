@@ -24,21 +24,42 @@ namespace Shemy.Retry.Internals
         }
 
         public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request,
-                                                        IPipelineContext context,
-                                                        Func<Task<HttpResponseMessage>> next,
-                                                        CancellationToken cancellationToken)
+            IPipelineContext context,
+            Func<Task<HttpResponseMessage>> next,
+            CancellationToken cancellationToken)
         {
-            var retryConfigure = _options.Get(request.ClientName);
+            var firstResponse = await ExecuteFirstTryAsync(next);
+            if (firstResponse.IsSucceed())
+            {
+                //Report Metrics for the first try
+                return firstResponse;
+            }
+            
+            return await ExecuteNextTriesAsync(request,next,cancellationToken);
+        }
 
+        private async Task<HttpResponseMessage> ExecuteFirstTryAsync(Func<Task<HttpResponseMessage>> next)
+        {
+            var response = await next();
+            return response;
+        }
+
+        private async Task<HttpResponseMessage> ExecuteNextTriesAsync(AnshanHttpRequestMessage request,
+            Func<Task<HttpResponseMessage>> next,
+            CancellationToken cancellationToken)
+        {
+            var retryConfigure = _options.Get(request.Name);
             for (var i = 0; i < retryConfigure.RetryCount; i++)
             {
                 var response = await next();
-
                 if (response.IsSucceed())
+                {
+                    //Report Metrics for next tries
                     return response;
+                }
 
                 if (retryConfigure.SleepDurationRetry > TimeSpan.Zero)
-                    await _clock.SleepAsync(retryConfigure.SleepDurationRetry , cancellationToken);
+                    await _clock.SleepAsync(retryConfigure.SleepDurationRetry, cancellationToken);
             }
 
             throw new RetryOutOfRangeException();

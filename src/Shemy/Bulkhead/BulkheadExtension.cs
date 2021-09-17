@@ -9,6 +9,16 @@ namespace Shemy.Bulkhead
         public static IHttpClientBuilder Bulkhead(this IHttpClientBuilder builder,
             Action<BulkheadConfigure> configure)
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (configure == null)
+            {
+                throw new ArgumentNullException(nameof(configure));
+            }
+            
             builder.Services.AddTransient<BulkheadMiddleware>();
 
             builder.Services.AddSingleton<IBulkheadLockProvider>(_ =>

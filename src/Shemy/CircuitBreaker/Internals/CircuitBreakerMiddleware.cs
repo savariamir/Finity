@@ -17,13 +17,13 @@ namespace Shemy.CircuitBreaker.Internals
             _engine = engine;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request,
-                                                        IPipelineContext context,
-                                                        Func<Task<HttpResponseMessage>> next,
-                                                        CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> RunAsync(
+            AnshanHttpRequestMessage request,
+            IPipelineContext context,
+            Func<Task<HttpResponseMessage>> next,
+            CancellationToken cancellationToken)
         {
-            
-            return await _engine.ExecuteAsync(request,next);
+            return await _engine.ExecuteAsync(request, next);
         }
     }
 }

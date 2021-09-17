@@ -27,7 +27,7 @@ namespace Shemy.Default
             {
                 HttpRequest = request,
                 SendAsync = () => base.SendAsync(request, cancellationToken),
-                ClientName = _clientName
+                Name = _clientName
             }, cancellationToken);
 
             return response;

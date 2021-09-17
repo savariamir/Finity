@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
-namespace Shemy.AddressBuilder.Internals
+namespace Shemy.Address.Internals
 {
     internal static class Uri
     {

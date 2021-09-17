@@ -32,10 +32,12 @@ namespace Shemy.Caching
                 GetFromCache(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()));
 
             if (cacheValue.Hit)
+            {
+                //Report that cache hits
                 return cacheValue.Data;
+            }
 
             var response = await next();
-            
             SetToCache(request, response);
 
             return response;
@@ -45,7 +47,7 @@ namespace Shemy.Caching
         {
             if (response is null || !response.IsSuccessStatusCode) return;
 
-            var cacheConfigure = _options.Get(request.ClientName);
+            var cacheConfigure = _options.Get(request.Name);
             
             if (request.HttpRequest.RequestUri is not null)
                 _cache.Set(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()), response, cacheConfigure.AbsoluteExpirationRelativeToNow);

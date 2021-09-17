@@ -7,8 +7,8 @@ namespace Shemy.Extensions
     {
         public static bool IsSucceed(this HttpResponseMessage response)
         {
-            return response.IsSuccessStatusCode || response.StatusCode == HttpStatusCode.NotFound ||
-                   response.StatusCode == HttpStatusCode.BadRequest;
+            return response.IsSuccessStatusCode ||
+                   response.StatusCode is HttpStatusCode.NotFound or HttpStatusCode.BadRequest;
         }
     }
 }
