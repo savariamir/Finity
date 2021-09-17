@@ -5,11 +5,12 @@ using Shemy.Pipeline;
 using Shemy.Retry.Configurations;
 using Shemy.Retry.Internals;
 
-namespace Shemy.Retry
+namespace Shemy.Retry.Extensions
 {
     public static class RetryExtension
     {
-        public static IHttpClientBuilder Retry(this IHttpClientBuilder builder,
+        public static IHttpClientBuilder Retry(
+            this IHttpClientBuilder builder,
             Action<RetryConfigure> retryConfigure)
         {
             if (builder == null)
@@ -30,6 +31,5 @@ namespace Shemy.Retry
 
             return builder;
         }
-        
     }
 }

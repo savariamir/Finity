@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Shemy.Extension\Shemy.Extension.csproj" />
       <ProjectReference Include="..\Shemy.Pipeline\Shemy.Pipeline.csproj" />
       <ProjectReference Include="..\Shemy\Shemy.csproj" />
     </ItemGroup>

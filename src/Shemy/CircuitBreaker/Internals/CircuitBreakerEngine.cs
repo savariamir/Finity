@@ -39,9 +39,7 @@ namespace Shemy.CircuitBreaker.Internals
             }
             
             //Report that circuit is open
-
-            ThrowExceptionIfTimeoutExpired(request.Name);
-
+            
 
             return await TryExecutingIfCircuitIsOpenAsync(next, request.Name);
         }
@@ -64,6 +62,8 @@ namespace Shemy.CircuitBreaker.Internals
         private async Task<HttpResponseMessage> TryExecutingIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
             string name)
         {
+            VerifyTimeout(name);
+            
             using (await TrySemaphore(name).EnterAsync())
             {
                 var response = await ExecuteIfCircuitIsOpenAsync(next, name);
@@ -79,7 +79,7 @@ namespace Shemy.CircuitBreaker.Internals
             }
         }
 
-        private void ThrowExceptionIfTimeoutExpired(string name)
+        private void VerifyTimeout(string name)
         {
             var configure = _options.Get(name);
             var dateTime =

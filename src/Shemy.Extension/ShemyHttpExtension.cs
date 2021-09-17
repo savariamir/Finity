@@ -12,15 +12,15 @@ using Shemy.Default;
 using Shemy.Pipeline;
 using Shemy.Pipeline.Internal;
 using Shemy.Request;
-using Shemy.Retry;
 using Shemy.Retry.Configurations;
+using Shemy.Retry.Extensions;
 using Shemy.Retry.Internals;
 
 namespace Shemy.Extension
 {
     public static class ShemyHttpExtension
     {
-        public static IHttpClientBuilder AddShemyHttpClient(
+        public static IShemyHttpClientBuilder AddShemyHttpClient(
             this IServiceCollection services, string name,
             Action<HttpClient> configureClient)
         {
@@ -48,10 +48,11 @@ namespace Shemy.Extension
                 return new DefaultDelegationHandler(name, pipeline);
             });
 
-            return builder;
+            return new ShemyHttpClientBuilder(builder.Name, builder.Services);
         }
 
-        public static IHttpClientBuilder AddShemyHttpClient(this IServiceCollection services, string name = "")
+        public static IShemyHttpClientBuilder AddShemyHttpClient(
+            this IServiceCollection services, string name = "")
         {
             services.AddTransient<DefaultMiddleware>();
 
@@ -77,11 +78,11 @@ namespace Shemy.Extension
                 return new DefaultDelegationHandler(name, pipeline);
             });
 
-            return builder;
+            return new ShemyHttpClientBuilder(builder.Name, builder.Services);
         }
 
 
-        public static IHttpClientBuilder AddRetry(this IHttpClientBuilder builder,
+        public static IShemyHttpClientBuilder AddRetry(this IShemyHttpClientBuilder builder,
             Action<RetryConfigure> configure)
         {
             builder.Retry(configure);
@@ -90,21 +91,21 @@ namespace Shemy.Extension
         }
 
 
-        public static IHttpClientBuilder AddCache(this IHttpClientBuilder builder,
+        public static IShemyHttpClientBuilder AddCache(this IShemyHttpClientBuilder builder,
             Action<CacheConfigure> configure)
         {
             builder.Cache(configure);
             return builder;
         }
 
-        public static IHttpClientBuilder AddCircuitBreaker(this IHttpClientBuilder builder,
+        public static IShemyHttpClientBuilder AddCircuitBreaker(this IShemyHttpClientBuilder builder,
             Action<CircuitBreakerConfigure> configure)
         {
             builder.CircuitBreaker(configure);
             return builder;
         }
 
-        public static IHttpClientBuilder AddBulkhead(this IHttpClientBuilder builder,
+        public static IShemyHttpClientBuilder AddBulkhead(this IShemyHttpClientBuilder builder,
             Action<BulkheadConfigure> configure)
         {
             builder.Bulkhead(configure);
@@ -112,8 +113,8 @@ namespace Shemy.Extension
             return builder;
         }
 
-        public static IHttpClientBuilder AddAuthentication(
-            this IHttpClientBuilder builder,
+        public static IShemyHttpClientBuilder AddAuthentication(
+            this IShemyHttpClientBuilder builder,
             Action<AuthenticationConfigure> configure)
         {
             builder.Authentication(configure);

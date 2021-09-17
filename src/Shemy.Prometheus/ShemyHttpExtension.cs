@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using Shemy.Extension;
 using Shemy.Pipeline;
 
 namespace Shemy.Prometheus
 {
     public static class ShemyHttpExtension
     {
-        public static IHttpClientBuilder AddPrometheus(this IHttpClientBuilder builder)
+        public static IShemyHttpClientBuilder AddPrometheus(this IShemyHttpClientBuilder builder)
         {
             builder.Services.AddTransient<MetricMiddleware>();
             builder.Services.AddTransient<IMetricProxy, MetricProxy>();
