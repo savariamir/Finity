@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Shemy.Extension\Shemy.Extension.csproj" />
+      <ProjectReference Include="..\Shemy.Prometheus\Shemy.Prometheus.csproj" />
       <ProjectReference Include="..\Shemy\Shemy.csproj" />
     </ItemGroup>
 

@@ -8,7 +8,7 @@ using Shemy.Request;
 
 namespace Shemy.Authentication
 {
-    internal class AuthenticationMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class AuthenticationMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
         private readonly ITokenProvider _tokenProvider;
 
@@ -21,8 +21,8 @@ namespace Shemy.Authentication
             Func<Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
-            var token = await _tokenProvider.GetToken(request.ClientName);
-            request.HttpRequestMessage.Headers.Authorization = 
+            var token = await _tokenProvider.GetToken(request.ClientName, cancellationToken);
+            request.HttpRequest.Headers.Authorization = 
                 new AuthenticationHeaderValue("Bearer", token);
 
             return await next();

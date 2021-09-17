@@ -13,7 +13,7 @@ namespace Shemy.Prometheus
 
         public void Report(string name, int millisecond)
         {
-            RegisterAverageRunningWorker(name, millisecond);
+            RegisterAverageRunning(name, millisecond);
             RegisterRunningWorker(name);
             RegisterLastExecution(name);
         }
@@ -44,7 +44,7 @@ namespace Shemy.Prometheus
         }
 
 
-        private void RegisterAverageRunningWorker(string name, int millisecond)
+        private void RegisterAverageRunning(string name, int millisecond)
         {
             if (!_gauges.TryGetValue(name, out var value))
             {

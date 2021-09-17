@@ -1,4 +1,5 @@
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,19 +22,30 @@ namespace Shemy.Authentication
             _httpClient = clientFactory.CreateClient("shemy-auth");
         }
 
-        public Task<string> GetToken(string clientName)
+        public async Task<string> GetToken(string name,CancellationToken cancellationToken = default)
         {
-            throw new System.NotImplementedException();
+            var cacheResult = GetFromCache(name);
+            if (cacheResult.Hit)
+                return cacheResult.Data;
+            
+            var token = await RequestTokenAsync(cancellationToken);
+            
+            SetToCache(token, name);
+
+            return token;
         }
 
-        internal async Task<HttpResponseMessage> RequestTokenAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken = default)
+        private async Task<string> RequestTokenAsync(CancellationToken cancellationToken = default)
         {
-            request.Method = HttpMethod.Post;
+            var content = new StringContent("application/json");
 
-            var response = await _httpClient.SendAsync(request, cancellationToken);
-
-            return response;
+            using var response =
+                await _httpClient.PostAsync("/api/TodoItems", content, cancellationToken);
+            
+            var responseStream =await  response.Content.ReadAsStringAsync(cancellationToken);
+            var data = JsonSerializer.Deserialize<TokenResponse>(responseStream);
+            
+            return data.AccessToken;
         }
 
         private void SetToCache(string token, string clientName)

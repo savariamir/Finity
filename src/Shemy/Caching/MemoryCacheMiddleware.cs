@@ -25,11 +25,11 @@ namespace Shemy.Caching
                                                         Func<Task<HttpResponseMessage>> next, 
                                                         CancellationToken cancellationToken)
         {
-            if (request.HttpRequestMessage.RequestUri is null) throw new Exception("");
-            if (request.HttpRequestMessage.Method != HttpMethod.Get) return null;
+            if (request.HttpRequest.RequestUri is null) throw new Exception("");
+            if (request.HttpRequest.Method != HttpMethod.Get) return null;
 
             var cacheValue =
-                GetFromCache(CacheKey.GetKey(request.HttpRequestMessage.RequestUri.ToString()));
+                GetFromCache(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()));
 
             if (cacheValue.Hit)
                 return cacheValue.Data;
@@ -47,8 +47,8 @@ namespace Shemy.Caching
 
             var cacheConfigure = _options.Get(request.ClientName);
             
-            if (request.HttpRequestMessage.RequestUri is not null)
-                _cache.Set(CacheKey.GetKey(request.HttpRequestMessage.RequestUri.ToString()), response, cacheConfigure.AbsoluteExpirationRelativeToNow);
+            if (request.HttpRequest.RequestUri is not null)
+                _cache.Set(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()), response, cacheConfigure.AbsoluteExpirationRelativeToNow);
         }
 
         private CacheResult<HttpResponseMessage> GetFromCache(string cacheKey)

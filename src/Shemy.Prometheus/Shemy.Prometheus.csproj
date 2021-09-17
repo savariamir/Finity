@@ -7,5 +7,10 @@
     <ItemGroup>
         <PackageReference Include="prometheus-net" Version="5.0.1" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shemy.Pipeline\Shemy.Pipeline.csproj" />
+      <ProjectReference Include="..\Shemy\Shemy.csproj" />
+    </ItemGroup>
     
 </Project>

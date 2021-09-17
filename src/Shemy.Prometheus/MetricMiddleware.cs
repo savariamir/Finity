@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Shemy.Pipeline.Abstractions;
 using Shemy.Request;
 
-namespace Shemy.Metrics
+namespace Shemy.Prometheus
 {
     public class MetricMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {

@@ -2,24 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Shemy.Authentication;
 using Shemy.Bulkhead;
 using Shemy.Caching;
 using Shemy.CircuitBreaker.Configurations;
 using Shemy.CircuitBreaker.Extensions;
 using Shemy.CircuitBreaker.Internals;
-using Shemy.Clock;
 using Shemy.Default;
 using Shemy.Pipeline;
 using Shemy.Pipeline.Internal;
 using Shemy.Request;
+using Shemy.Retry;
 using Shemy.Retry.Configurations;
 using Shemy.Retry.Internals;
 
 namespace Shemy.Extension
 {
-    public static class AnshanHttpExtension
+    public static class ShemyHttpExtension
     {
-        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name,
+        public static IHttpClientBuilder AddShemyHttpClient(
+            this IServiceCollection services, string name,
             Action<HttpClient> configureClient)
         {
             services.AddTransient<DefaultMiddleware>();
@@ -30,6 +32,7 @@ namespace Shemy.Extension
                 typeof(CircuitBreakerMiddleware),
                 typeof(RetryMiddleware),
                 typeof(BulkheadMiddleware),
+                typeof(AuthenticationMiddleware),
                 typeof(DefaultMiddleware),
             };
 
@@ -48,7 +51,7 @@ namespace Shemy.Extension
             return builder;
         }
 
-        public static IHttpClientBuilder AddAnshanHttpClient(this IServiceCollection services, string name = "")
+        public static IHttpClientBuilder AddShemyHttpClient(this IServiceCollection services, string name = "")
         {
             services.AddTransient<DefaultMiddleware>();
 
@@ -58,6 +61,7 @@ namespace Shemy.Extension
                 typeof(CircuitBreakerMiddleware),
                 typeof(RetryMiddleware),
                 typeof(BulkheadMiddleware),
+                typeof(AuthenticationMiddleware),
                 typeof(DefaultMiddleware),
             };
 
@@ -65,7 +69,6 @@ namespace Shemy.Extension
             var builder = services.AddHttpClient(name);
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(DefaultMiddleware)));
-
 
             builder.AddHttpMessageHandler((sp) =>
             {
@@ -79,37 +82,18 @@ namespace Shemy.Extension
 
 
         public static IHttpClientBuilder AddRetry(this IHttpClientBuilder builder,
-            Action<RetryConfigure> retryConfigure)
+            Action<RetryConfigure> configure)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (retryConfigure == null)
-            {
-                throw new ArgumentNullException(nameof(retryConfigure));
-            }
-
-
-            builder.Services.AddTransient<IClock, SystemClock>();
-            builder.Services.AddTransient<RetryMiddleware>();
-            builder.Services.Configure(builder.Name, retryConfigure);
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
-                options => options.Types.Add(typeof(RetryMiddleware)));
+            builder.Retry(configure);
 
             return builder;
         }
 
 
         public static IHttpClientBuilder AddCache(this IHttpClientBuilder builder,
-            Action<CacheConfigure> cacheConfigure)
+            Action<CacheConfigure> configure)
         {
-            builder.Services.AddTransient<MemoryCacheMiddleware>();
-            builder.Services.AddMemoryCache();
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
-                options => options.Types.Add(typeof(MemoryCacheMiddleware)));
-            builder.Services.Configure(builder.Name, cacheConfigure);
+            builder.Cache(configure);
             return builder;
         }
 
@@ -123,16 +107,7 @@ namespace Shemy.Extension
         public static IHttpClientBuilder AddBulkhead(this IHttpClientBuilder builder,
             Action<BulkheadConfigure> configure)
         {
-            builder.Services.AddTransient<BulkheadMiddleware>();
-
-            builder.Services.AddSingleton<IBulkheadLockProvider>(_ =>
-                new BulkheadLockProvider(builder.Name, 2));
-
-            builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
-                options => { options.Types.Add(typeof(BulkheadMiddleware)); });
-
-
-            builder.Services.Configure(builder.Name, configure);
+            builder.Bulkhead(configure);
 
             return builder;
         }

@@ -10,6 +10,7 @@ using Polly;
 using Polly.Extensions.Http;
 using Shemy.Extension;
 using Shemy.Extensions;
+using Shemy.Prometheus;
 
 // using Polly;
 // using Polly.Extensions.Http; 
@@ -34,14 +35,15 @@ namespace Shemy.Http
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "Shemy.Sample", Version = "v1"});
             });
 
-            services.AddAnshanHttpClient("test", a => { })
+            services.AddShemyHttpClient("test", a => { })
                 .AddBulkhead(a => { a.MaxConcurrentCalls = 12; })
-                // .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
+                .AddCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })
                 .AddRetry(a =>
                 {
                     a.RetryCount = 5;
                     a.SleepDurationRetry = TimeSpan.FromSeconds(1);
                 })
+                .AddPrometheus()
                 .AddCircuitBreaker(a =>
                 {
                     a.DurationOfBreak = TimeSpan.Zero;
@@ -49,7 +51,7 @@ namespace Shemy.Http
                     a.SuccessAllowedBeforeClosing = 1;
                 });
             
-            services.AddAnshanHttpClient("test1")
+            services.AddShemyHttpClient("test1")
                 .AddRetry(a =>
                 {
                     a.RetryCount = 2;

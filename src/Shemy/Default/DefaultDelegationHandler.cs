@@ -25,7 +25,7 @@ namespace Shemy.Default
         {
             var response = await _pipeline.RunAsync(new AnshanHttpRequestMessage
             {
-                HttpRequestMessage = request,
+                HttpRequest = request,
                 SendAsync = () => base.SendAsync(request, cancellationToken),
                 ClientName = _clientName
             }, cancellationToken);
