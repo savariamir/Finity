@@ -6,7 +6,7 @@ Finity is a lightweight fault tolerance library designed to isolate access to re
 
 ```c#
 services
-    .AddShemyHttpClient("finity")
+    .AddFinityHttpClient("finity")
     .AddRetry(options =>
     {
         options.SleepDurationRetry = TimeSpan.FromMilliseconds(100);
@@ -17,7 +17,8 @@ services
 # Circuit Breaker
 
 ```c#
-services.AddShemyHttpClient("finity")
+services
+    .AddFinityHttpClient("finity")
     .AddCircuitBreaker(options =>
     {
         options.SuccessAllowedBeforeClosing = 1;
@@ -29,7 +30,8 @@ services.AddShemyHttpClient("finity")
 # Caching
 
 ```c#
-services.AddShemyHttpClient("finity")
+services
+    .AddFinityHttpClient("finity")
     .AddCache(options =>
     {
         options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
@@ -39,7 +41,8 @@ services.AddShemyHttpClient("finity")
 # Bulkhead
 
 ```c#
-services.AddShemyHttpClient("finity")
+services
+    .AddFinityHttpClient("finity")
     .AddBulkhead(options =>
     {
         options.MaxConcurrentCalls = 100;
