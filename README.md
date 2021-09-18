@@ -5,11 +5,10 @@ Finity is a lightweight fault tolerance library designed to isolate access to re
 # Retry
 
 ```c#
-    
-     services.AddShemyHttpClient("finity")
-                .AddRetry(options =>
-                {
-                    options.SleepDurationRetry = TimeSpan.FromMilliseconds(100);
-                    options.RetryCount = 3;
-                });
+services.AddShemyHttpClient("finity")
+        .AddRetry(options =>
+        {
+            options.SleepDurationRetry = TimeSpan.FromMilliseconds(100);
+            options.RetryCount = 3;
+        });
 ```
