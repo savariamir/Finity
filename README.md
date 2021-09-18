@@ -12,3 +12,35 @@ services.AddShemyHttpClient("finity")
         options.RetryCount = 3;
     });
 ```
+
+# Circuit Breaker
+
+```c#
+services.AddShemyHttpClient("finity")
+    .AddCircuitBreaker(options =>
+    {
+        options.SuccessAllowedBeforeClosing = 1;
+        options.DurationOfBreak = TimeSpan.FromMilliseconds(100);
+        options.ExceptionsAllowedBeforeBreaking = 2;
+    });
+```
+
+# Caching
+
+```c#
+services.AddShemyHttpClient("finity")
+    .AddCache(options =>
+    {
+        options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
+    });
+```
+
+# Bulkhead
+
+```c#
+services.AddShemyHttpClient("finity")
+    .AddBulkhead(options =>
+    {
+        options.MaxConcurrentCalls = 100;
+    });
+```
