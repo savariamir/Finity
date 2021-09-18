@@ -2,7 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Finity.Extension
 {
-    public interface IShemyHttpClientBuilder : IHttpClientBuilder
+    public interface IFinityHttpClientBuilder : IHttpClientBuilder
     {
     }
 }

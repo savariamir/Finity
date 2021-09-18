@@ -19,7 +19,7 @@ namespace Finity.Authentication
         {
             _cache = cache;
             _options = options;
-            _httpClient = clientFactory.CreateClient("shemy-auth");
+            _httpClient = clientFactory.CreateClient("finity-auth");
         }
 
         public async Task<string> GetToken(string name,CancellationToken cancellationToken = default)

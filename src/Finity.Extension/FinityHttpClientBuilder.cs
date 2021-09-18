@@ -2,12 +2,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Finity.Extension
 {
-    public class ShemyHttpClientBuilder : IShemyHttpClientBuilder
+    public class FinityHttpClientBuilder : IFinityHttpClientBuilder
     {
         public string Name { get; }
         public IServiceCollection Services { get; }
 
-        public ShemyHttpClientBuilder(string name, IServiceCollection services)
+        public FinityHttpClientBuilder(string name, IServiceCollection services)
         {
             Name = name;
             Services = services;
