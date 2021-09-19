@@ -20,7 +20,7 @@ namespace Finity.Extension
 {
     public static class FinityHttpExtension
     {
-        public static IFinityHttpClientBuilder AddFinity(this IHttpClientBuilder builder)
+        private static IHttpClientBuilder TryAddFinity(this IHttpClientBuilder builder)
         {
             builder.Services.AddTransient<DefaultMiddleware>();
 
@@ -45,46 +45,49 @@ namespace Finity.Extension
                 return new DefaultDelegationHandler(builder.Name, pipeline);
             });
 
-            return new FinityHttpClientBuilder(builder.Name, builder.Services);
+            return builder;
         }
 
-        public static IFinityHttpClientBuilder WithRetry(this IFinityHttpClientBuilder builder,
-            Action<RetryConfigure> configure)
+        public static IHttpClientBuilder WithRetry(this IHttpClientBuilder builder,
+                                                   Action<RetryConfigure> configure)
         {
+            builder.TryAddFinity();
             builder.Retry(configure);
 
             return builder;
         }
 
 
-        public static IFinityHttpClientBuilder WithCache(this IFinityHttpClientBuilder builder,
-            Action<CacheConfigure> configure)
+        public static IHttpClientBuilder WithCache(this IHttpClientBuilder builder,
+                                                   Action<CacheConfigure> configure)
         {
+            builder.TryAddFinity();
             builder.Cache(configure);
             return builder;
         }
 
-        public static IFinityHttpClientBuilder WithCircuitBreaker(this IFinityHttpClientBuilder builder,
-            Action<CircuitBreakerConfigure> configure)
+        public static IHttpClientBuilder WithCircuitBreaker(this IHttpClientBuilder builder,
+                                                            Action<CircuitBreakerConfigure> configure)
         {
+            builder.TryAddFinity();
             builder.CircuitBreaker(configure);
             return builder;
         }
 
-        public static IFinityHttpClientBuilder WithBulkhead(this IFinityHttpClientBuilder builder,
-            Action<BulkheadConfigure> configure)
+        public static IHttpClientBuilder WithBulkhead(this IHttpClientBuilder builder,
+                                                      Action<BulkheadConfigure> configure)
         {
+            builder.TryAddFinity();
             builder.Bulkhead(configure);
-
             return builder;
         }
 
-        public static IFinityHttpClientBuilder AddAuthentication(
-            this IFinityHttpClientBuilder builder,
+        public static IHttpClientBuilder AddAuthentication(
+            this IHttpClientBuilder builder,
             Action<AuthenticationConfigure> configure)
         {
+            builder.TryAddFinity();
             builder.Authentication(configure);
-
             return builder;
         }
     }

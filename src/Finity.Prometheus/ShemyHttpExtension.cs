@@ -6,7 +6,7 @@ namespace Finity.Prometheus
 {
     public static class ShemyHttpExtension
     {
-        public static IFinityHttpClientBuilder AddPrometheus(this IFinityHttpClientBuilder builder)
+        public static IHttpClientBuilder AddPrometheus(this IHttpClientBuilder builder)
         {
             builder.Services.AddTransient<MetricMiddleware>();
             builder.Services.AddTransient<IMetricProxy, MetricProxy>();
