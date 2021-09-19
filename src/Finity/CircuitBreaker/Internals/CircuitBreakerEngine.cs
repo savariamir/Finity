@@ -7,6 +7,7 @@ using Finity.CircuitBreaker.Configurations;
 using Finity.CircuitBreaker.Exceptions;
 using Finity.Extensions;
 using Finity.Locking;
+using Finity.Metric;
 using Finity.Request;
 using Microsoft.Extensions.Options;
 
@@ -20,7 +21,9 @@ namespace Finity.CircuitBreaker.Internals
         private readonly ICircuitBreakerMetric _metric;
 
         public CircuitBreakerEngine(IOptionsSnapshot<CircuitBreakerConfigure> options,
-            ICircuitBreakerLockProvider lockProvider, ICircuitBreakerStateProvider circuitBreakerStateProvider, ICircuitBreakerMetric metric)
+                                    ICircuitBreakerLockProvider lockProvider,
+                                    ICircuitBreakerStateProvider circuitBreakerStateProvider,
+                                    ICircuitBreakerMetric metric)
         {
             _options = options;
             _lockProvider = lockProvider;
@@ -30,15 +33,15 @@ namespace Finity.CircuitBreaker.Internals
 
 
         public async Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
-            Func<Task<HttpResponseMessage>> next)
+                                                            Func<Task<HttpResponseMessage>> next)
         {
             if (_circuitBreakerStateProvider.GetState(request.Name) == CircuitBreakerState.Closed)
             {
                 return await ExecuteIfCircuitIsCloseAsync(next, request.Name);
             }
-            
+
             //Report that circuit is open
-            
+            Metrics.Increment(Metrics.CircuitBreakerOpenedCount);
 
             return await TryExecutingIfCircuitIsOpenAsync(next, request.Name);
         }
@@ -48,7 +51,7 @@ namespace Finity.CircuitBreaker.Internals
             lock (name)
             {
                 var semaphore = _lockProvider.TrySemaphore(name);
-                if (semaphore is not {CurrentCount: 0})
+                if (semaphore is not { CurrentCount: 0 })
                 {
                     return semaphore;
                 }
@@ -62,7 +65,7 @@ namespace Finity.CircuitBreaker.Internals
             string name)
         {
             VerifyTimeout(name);
-            
+
             using (await TrySemaphore(name).EnterAsync())
             {
                 var response = await ExecuteIfCircuitIsOpenAsync(next, name);
@@ -91,7 +94,7 @@ namespace Finity.CircuitBreaker.Internals
         }
 
         private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync(Func<Task<HttpResponseMessage>> next,
-            string name)
+                                                                             string name)
         {
             var response = await next();
             if (response.IsSucceed())
@@ -102,21 +105,22 @@ namespace Finity.CircuitBreaker.Internals
             var configure = _options.Get(name);
             _metric.IncrementFailure(name);
 
-            if (configure.ExceptionsAllowedBeforeBreaking < _metric.GetFailures(name))
-            {
-                //report: Circuit is opened
-                _circuitBreakerStateProvider.Trip(name);
-            }
+            if (configure.ExceptionsAllowedBeforeBreaking >= _metric.GetFailures(name)) return response;
+            
+            
+            //report: Circuit is opened
+            Metrics.Increment(Metrics.CircuitBreakerClosedCount);
+            _circuitBreakerStateProvider.Trip(name);
 
             return response;
         }
 
         private async Task<HttpResponseMessage> ExecuteIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
-            string name)
+                                                                            string name)
         {
             // Set the circuit breaker state to HalfOpen.
             _circuitBreakerStateProvider.HalfOpen(name);
-            
+
             var response = await next();
             if (response.IsSucceed())
             {
@@ -131,7 +135,7 @@ namespace Finity.CircuitBreaker.Internals
 
                 return response;
             }
-            
+
             _metric.IncrementFailure(name);
             _circuitBreakerStateProvider.Trip(name);
 

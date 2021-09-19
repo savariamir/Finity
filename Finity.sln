@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Pipeline", "src\Fini
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Extension", "src\Finity.Extension\Finity.Extension.csproj", "{483053F5-0775-4E52-A517-CD2AD7608E13}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Prometheus", "src\Finity.Prometheus\Finity.Prometheus.csproj", "{8C129019-02FA-4D06-8C2A-537B897B613C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Monitoring", "src\Finity.Monitoring\Finity.Monitoring.csproj", "{8C129019-02FA-4D06-8C2A-537B897B613C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

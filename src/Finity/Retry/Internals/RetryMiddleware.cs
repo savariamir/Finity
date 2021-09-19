@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Finity.Clock;
 using Finity.Extensions;
+using Finity.Metric;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Retry.Configurations;
@@ -24,18 +25,19 @@ namespace Finity.Retry.Internals
         }
 
         public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request,
-            IPipelineContext context,
-            Func<Task<HttpResponseMessage>> next,
-            CancellationToken cancellationToken)
+                                                        IPipelineContext context,
+                                                        Func<Task<HttpResponseMessage>> next,
+                                                        CancellationToken cancellationToken)
         {
             var firstResponse = await ExecuteFirstTryAsync(next);
-            if (firstResponse.IsSucceed())
+            if (!firstResponse.IsSucceed())
             {
-                //Report Metrics for the first try
-                return firstResponse;
+                return await ExecuteNextTriesAsync(request, next, cancellationToken);
             }
-            
-            return await ExecuteNextTriesAsync(request,next,cancellationToken);
+
+            //Report Metrics for the first try
+            Metrics.Increment(Metrics.FirstTryCount);
+            return firstResponse;
         }
 
         private async Task<HttpResponseMessage> ExecuteFirstTryAsync(Func<Task<HttpResponseMessage>> next)
@@ -45,8 +47,8 @@ namespace Finity.Retry.Internals
         }
 
         private async Task<HttpResponseMessage> ExecuteNextTriesAsync(AnshanHttpRequestMessage request,
-            Func<Task<HttpResponseMessage>> next,
-            CancellationToken cancellationToken)
+                                                                      Func<Task<HttpResponseMessage>> next,
+                                                                      CancellationToken cancellationToken)
         {
             var retryConfigure = _options.Get(request.Name);
             for (var i = 0; i < retryConfigure.RetryCount; i++)
@@ -55,6 +57,7 @@ namespace Finity.Retry.Internals
                 if (response.IsSucceed())
                 {
                     //Report Metrics for next tries
+                    Metrics.Increment(Metrics.NextTryCount);
                     return response;
                 }
 

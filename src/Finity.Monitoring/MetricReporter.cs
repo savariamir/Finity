@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using Prometheus;
 
-namespace Finity.Prometheus
+namespace Finity.Monitoring
 {
     public class MetricReporter
     {

@@ -34,7 +34,7 @@ namespace Finity.Extension
                 typeof(DefaultMiddleware),
             };
 
-            
+
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(DefaultMiddleware)));
 
@@ -51,8 +51,8 @@ namespace Finity.Extension
         public static IHttpClientBuilder WithRetry(this IHttpClientBuilder builder,
                                                    Action<RetryConfigure> configure)
         {
-            builder.TryAddFinity();
-            builder.Retry(configure);
+            builder.TryAddFinity()
+                   .Retry(configure);
 
             return builder;
         }
@@ -61,24 +61,25 @@ namespace Finity.Extension
         public static IHttpClientBuilder WithCache(this IHttpClientBuilder builder,
                                                    Action<CacheConfigure> configure)
         {
-            builder.TryAddFinity();
-            builder.Cache(configure);
+            builder.TryAddFinity()
+                   .Cache(configure);
             return builder;
         }
 
         public static IHttpClientBuilder WithCircuitBreaker(this IHttpClientBuilder builder,
                                                             Action<CircuitBreakerConfigure> configure)
         {
-            builder.TryAddFinity();
-            builder.CircuitBreaker(configure);
+            builder.TryAddFinity()
+                   .CircuitBreaker(configure);
             return builder;
         }
 
         public static IHttpClientBuilder WithBulkhead(this IHttpClientBuilder builder,
                                                       Action<BulkheadConfigure> configure)
         {
-            builder.TryAddFinity();
-            builder.Bulkhead(configure);
+            builder
+                .TryAddFinity()
+                .Bulkhead(configure);
             return builder;
         }
 
@@ -86,8 +87,8 @@ namespace Finity.Extension
             this IHttpClientBuilder builder,
             Action<AuthenticationConfigure> configure)
         {
-            builder.TryAddFinity();
-            builder.Authentication(configure);
+            builder.TryAddFinity()
+                   .Authentication(configure);
             return builder;
         }
     }

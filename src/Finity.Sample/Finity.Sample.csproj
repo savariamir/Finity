@@ -12,7 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Finity.Extension\Finity.Extension.csproj" />
-      <ProjectReference Include="..\Finity.Prometheus\Finity.Prometheus.csproj" />
+      <ProjectReference Include="..\Finity.Monitoring\Finity.Monitoring.csproj" />
       <ProjectReference Include="..\Finity\Finity.csproj" />
     </ItemGroup>
 
