@@ -21,16 +21,9 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Publish EasyPipe
+      - name: Publish Finity
         uses: brandedoutcast/publish-nuget@v2.5.5
         with:
-          PROJECT_FILE_PATH: src/EasyPipe/EasyPipe.csproj
-          NUGET_KEY: ${{secrets.Nuget_API_Key}}
-          NUGET_SOURCE: https://api.nuget.org
-
-      - name: Publish EasyPipe.Extensions.MicrosoftDependencyInjection
-        uses: brandedoutcast/publish-nuget@v2.5.5
-        with:
-          PROJECT_FILE_PATH: src/EasyPipe.Extensions.MicrosoftDependencyInjection/EasyPipe.Extensions.MicrosoftDependencyInjection.csproj
+          PROJECT_FILE_PATH: src/Finity/Finity.csproj
           NUGET_KEY: ${{secrets.Nuget_API_Key}}
           NUGET_SOURCE: https://api.nuget.org
