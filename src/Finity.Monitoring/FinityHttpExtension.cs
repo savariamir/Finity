@@ -2,7 +2,6 @@ using System;
 using Finity.Core;
 using Finity.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace Finity.Monitoring
 {
     public static class FinityHttpExtension
