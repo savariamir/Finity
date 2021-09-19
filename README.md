@@ -1,3 +1,5 @@
+[![.NET 5 CI](https://github.com/savariamir/Finity/actions/workflows/dotnet.yml/badge.svg)](https://github.com/savariamir/Finity/actions/workflows/dotnet.yml)
+
 # Fault tolerance library designed for .Net core
 
  Finity is a .NET  Core resilience and Fault tolerance library that allows developers to extend IHttpClientFactory such as Retry, Circuit Breaker, Caching, Authentication and, Bulkhead Isolation.
