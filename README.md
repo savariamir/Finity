@@ -14,7 +14,6 @@ Finity extends .Net Core HttpClient Factory to avoid transienting faults.
 ```c#
 services
     .AddHttpClient("finity")
-    .AddFinity()
     .WithRetry(options =>
     {
         options.SleepDurationRetry = TimeSpan.FromMilliseconds(100);
@@ -27,7 +26,6 @@ services
 ```c#
 services
     .AddHttpClient("finity")
-    .AddFinity()
     .WithCircuitBreaker(options =>
     {
         options.SuccessAllowedBeforeClosing = 1;
@@ -41,7 +39,6 @@ services
 ```c#
 services
     .AddHttpClient("finity")
-    .AddFinity()
     .WithCache(options =>
     {
         options.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
@@ -53,7 +50,6 @@ services
 ```c#
 services
     .AddHttpClient("finity")
-    .AddFinity()
     .WithBulkhead(options =>
     {
         options.MaxConcurrentCalls = 100;
