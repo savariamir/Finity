@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Finity.Clock;
+using Finity.Core;
 using Finity.Extensions;
 using Finity.Metric;
 using Finity.Pipeline.Abstractions;
@@ -24,19 +25,22 @@ namespace Finity.Retry.Internals
             _options = options;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request,
-                                                        IPipelineContext context,
-                                                        Func<Task<HttpResponseMessage>> next,
-                                                        CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> RunAsync(
+            AnshanHttpRequestMessage request,
+            IPipelineContext context,
+            Func<Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric,
+            CancellationToken cancellationToken)
         {
             var firstResponse = await ExecuteFirstTryAsync(next);
             if (!firstResponse.IsSucceed())
             {
                 return await ExecuteNextTriesAsync(request, next, cancellationToken);
-            }
+            }   
 
             //Report Metrics for the first try
-            Metrics.Increment(Metrics.FirstTryCount);
+            setMetric(new CounterValue());
+            // Metrics.Increment(Metrics.FirstTryCount);
             return firstResponse;
         }
 
@@ -47,8 +51,8 @@ namespace Finity.Retry.Internals
         }
 
         private async Task<HttpResponseMessage> ExecuteNextTriesAsync(AnshanHttpRequestMessage request,
-                                                                      Func<Task<HttpResponseMessage>> next,
-                                                                      CancellationToken cancellationToken)
+            Func<Task<HttpResponseMessage>> next,
+            CancellationToken cancellationToken)
         {
             var retryConfigure = _options.Get(request.Name);
             for (var i = 0; i < retryConfigure.RetryCount; i++)

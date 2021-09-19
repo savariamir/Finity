@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,21 +10,23 @@ using Microsoft.Extensions.Options;
 
 namespace Finity.Caching
 {
-    public class MemoryCacheMiddleware: IMiddleware<AnshanHttpRequestMessage,HttpResponseMessage>
+    public class MemoryCacheMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IMemoryCache _cache;
         private readonly IOptionsSnapshot<CacheConfigure> _options;
-        
+
         public MemoryCacheMiddleware(IMemoryCache cache, IOptionsSnapshot<CacheConfigure> options)
         {
             _cache = cache;
             _options = options;
         }
-        
-        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, 
-                                                        IPipelineContext context, 
-                                                        Func<Task<HttpResponseMessage>> next, 
-                                                        CancellationToken cancellationToken)
+
+        public async Task<HttpResponseMessage> RunAsync(
+            AnshanHttpRequestMessage request,
+            IPipelineContext context,
+            Func<Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric,
+            CancellationToken cancellationToken)
         {
             if (request.HttpRequest.RequestUri is null) throw new Exception("");
             if (request.HttpRequest.Method != HttpMethod.Get) return null;
@@ -42,15 +45,16 @@ namespace Finity.Caching
 
             return response;
         }
-        
-        private void SetToCache(AnshanHttpRequestMessage request,HttpResponseMessage response)
+
+        private void SetToCache(AnshanHttpRequestMessage request, HttpResponseMessage response)
         {
             if (response is null || !response.IsSuccessStatusCode) return;
 
             var cacheConfigure = _options.Get(request.Name);
-            
+
             if (request.HttpRequest.RequestUri is not null)
-                _cache.Set(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()), response, cacheConfigure.AbsoluteExpirationRelativeToNow);
+                _cache.Set(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()), response,
+                    cacheConfigure.AbsoluteExpirationRelativeToNow);
         }
 
         private CacheResult<HttpResponseMessage> GetFromCache(string cacheKey)

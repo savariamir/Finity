@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Pipeline.Exceptions;
 using Microsoft.Extensions.Options;
@@ -13,11 +14,13 @@ namespace Finity.Pipeline.Internal
     {
         private readonly Type[] _middlewareTypes;
         private readonly IServiceProvider _serviceProvider;
+        private readonly Action<MetricValue> _setMetric;
         private readonly AnshanFactoryOptions _options;
 
-        public LazyPipeline(IServiceProvider serviceProvider, IEnumerable<Type> middlewareTypes, string clientName)
+        public LazyPipeline(IServiceProvider serviceProvider, IEnumerable<Type> middlewareTypes,Action<MetricValue> setMetric, string clientName)
         {
             _serviceProvider = serviceProvider;
+            _setMetric = setMetric;
             _middlewareTypes = middlewareTypes.ToArray();
             _options = ((IOptionsSnapshot<AnshanFactoryOptions>)
                 _serviceProvider.GetService(typeof(IOptionsSnapshot<AnshanFactoryOptions>)))?.Get(clientName);
@@ -47,7 +50,7 @@ namespace Finity.Pipeline.Internal
                     throw new MiddlewareNotResolvedException(middlewareType);
                 }
 
-                return middleware.RunAsync(request, context, Next, cancellationToken);
+                return middleware.RunAsync(request, context, Next,_setMetric ,cancellationToken);
             }
 
             return Next();

@@ -2,18 +2,17 @@ using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Finity.Monitoring;
 
-namespace Finity.Prometheus
+namespace Finity.Core
 {
-    public class MetricProxy : IMetricProxy
+    public class MetricProxy: IMetricProxy
     {
         private Stopwatch _stopwatch;
-        private readonly MetricReporter _reporter;
+        private readonly Action<MetricValue> _action;
 
-        public MetricProxy(MetricReporter reporter)
+        public MetricProxy(Action<MetricValue> action)
         {
-            _reporter = reporter;
+            _action = action;
         }
 
         protected virtual void Before()
@@ -35,7 +34,9 @@ namespace Finity.Prometheus
         protected virtual void After(string name)
         {
             _stopwatch.Stop();
-            _reporter.Report(name, _stopwatch.Elapsed.Milliseconds);
+            _action(new CounterValue());
+            _action(new GaugeValue());
+            // _reporter.Report(name, _stopwatch.Elapsed.Milliseconds);
         }
     }
 }

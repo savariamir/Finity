@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Core;
 using Finity.Locking;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
@@ -21,6 +22,7 @@ namespace Finity.Bulkhead
             AnshanHttpRequestMessage request,
             IPipelineContext context,
             Func<Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             using (await _bulkheadLockProvider

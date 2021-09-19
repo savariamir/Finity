@@ -23,7 +23,7 @@ namespace Finity.Default
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var response = await _pipeline.RunAsync(new AnshanHttpRequestMessage
+        var response = await _pipeline.RunAsync(new AnshanHttpRequestMessage
             {
                 HttpRequest = request,
                 SendAsync = () => base.SendAsync(request, cancellationToken),

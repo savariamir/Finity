@@ -16,7 +16,7 @@ namespace Finity.Sample.Controllers
 
         public SampleController(IHttpClientFactory clientFactory)
         {
-            _httpClient = clientFactory.CreateClient("test");
+            _httpClient = clientFactory.CreateClient("finity");
             _httpClient1 = clientFactory.CreateClient("test1");
         }
         

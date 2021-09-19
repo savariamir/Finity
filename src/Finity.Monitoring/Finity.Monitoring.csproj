@@ -9,6 +9,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Finity.Core\Finity.Core.csproj" />
       <ProjectReference Include="..\Finity.Extension\Finity.Extension.csproj" />
       <ProjectReference Include="..\Finity.Pipeline\Finity.Pipeline.csproj" />
       <ProjectReference Include="..\Finity\Finity.csproj" />

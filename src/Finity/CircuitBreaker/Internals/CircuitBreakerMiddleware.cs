@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Finity.CircuitBreaker.Abstractions;
+using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 
@@ -21,6 +22,7 @@ namespace Finity.CircuitBreaker.Internals
             AnshanHttpRequestMessage request,
             IPipelineContext context,
             Func<Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             return await _engine.ExecuteAsync(request, next);

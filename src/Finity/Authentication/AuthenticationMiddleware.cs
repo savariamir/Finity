@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 
@@ -17,8 +18,11 @@ namespace Finity.Authentication
             _tokenProvider = tokenProvider;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(AnshanHttpRequestMessage request, IPipelineContext context,
+        public async Task<HttpResponseMessage> RunAsync(
+            AnshanHttpRequestMessage request, 
+            IPipelineContext context,
             Func<Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var token = await _tokenProvider.GetToken(request.Name, cancellationToken);

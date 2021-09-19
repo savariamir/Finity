@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Core;
 
 namespace Finity.Pipeline.Abstractions
 {
@@ -9,6 +10,7 @@ namespace Finity.Pipeline.Abstractions
         Task<TResponse> RunAsync(TRequest request,
                                  IPipelineContext context,
                                  Func<Task<TResponse>> next,
+                                 Action<MetricValue> setMetric,
                                  CancellationToken cancellationToken);
     }
 }

@@ -15,5 +15,9 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Finity.Core\Finity.Core.csproj" />
+    </ItemGroup>
+
 
 </Project>

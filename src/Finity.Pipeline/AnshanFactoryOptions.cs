@@ -5,6 +5,6 @@ namespace Finity.Pipeline
 {
     public class AnshanFactoryOptions
     {
-        public List<Type> Types { get; set; } = new();
+        public HashSet<Type> Types { get; set; } = new();
     }
 }
