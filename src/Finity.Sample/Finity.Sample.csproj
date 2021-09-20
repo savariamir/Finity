@@ -8,5 +8,4 @@
         <PackageReference Include="Finity" Version="0.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
-s
 </Project>
