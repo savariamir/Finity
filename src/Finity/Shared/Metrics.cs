@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 
-namespace Finity.Core
+namespace Finity.Shared
 {
     public static class Metrics
     {

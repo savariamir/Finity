@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Finity.Core
+namespace Finity.Shared
 {
     public class MetricProxy: IMetricProxy
     {

@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
+using Finity.Shared;
 
 namespace Finity.Authentication
 {

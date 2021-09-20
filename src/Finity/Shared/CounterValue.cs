@@ -1,4 +1,4 @@
-namespace Finity.Core
+namespace Finity.Shared
 {
     public class CounterValue : MetricValue
     {

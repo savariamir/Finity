@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Finity.Core;
+using Finity.Shared;
 
 namespace Finity.Pipeline.Abstractions
 {

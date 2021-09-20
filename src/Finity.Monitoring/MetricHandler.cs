@@ -1,4 +1,4 @@
-using Finity.Core;
+using Finity.Shared;
 
 namespace Finity.Monitoring
 {

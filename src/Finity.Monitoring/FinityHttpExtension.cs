@@ -1,6 +1,6 @@
 using System;
-using Finity.Core;
 using Finity.Extensions;
+using Finity.Shared;
 using Microsoft.Extensions.DependencyInjection;
 namespace Finity.Monitoring
 {

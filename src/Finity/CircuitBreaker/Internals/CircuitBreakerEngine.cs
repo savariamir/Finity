@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 using Finity.CircuitBreaker.Abstractions;
 using Finity.CircuitBreaker.Configurations;
 using Finity.CircuitBreaker.Exceptions;
-using Finity.Core;
 using Finity.Extensions;
 using Finity.Locking;
 using Finity.Metric;
 using Finity.Request;
+using Finity.Shared;
 using Microsoft.Extensions.Options;
 
 namespace Finity.CircuitBreaker.Internals

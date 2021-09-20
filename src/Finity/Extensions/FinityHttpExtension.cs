@@ -7,7 +7,6 @@ using Finity.Caching;
 using Finity.CircuitBreaker.Configurations;
 using Finity.CircuitBreaker.Extensions;
 using Finity.CircuitBreaker.Internals;
-using Finity.Core;
 using Finity.Default;
 using Finity.Pipeline;
 using Finity.Pipeline.Internal;
@@ -15,6 +14,7 @@ using Finity.Request;
 using Finity.Retry.Configurations;
 using Finity.Retry.Extensions;
 using Finity.Retry.Internals;
+using Finity.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 

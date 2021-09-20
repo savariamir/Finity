@@ -2,9 +2,9 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
+using Finity.Shared;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 

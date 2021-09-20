@@ -2,10 +2,10 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Finity.Core;
 using Finity.Locking;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
+using Finity.Shared;
 
 namespace Finity.Bulkhead
 {

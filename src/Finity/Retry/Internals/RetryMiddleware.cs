@@ -3,13 +3,13 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Finity.Clock;
-using Finity.Core;
 using Finity.Extensions;
 using Finity.Metric;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Retry.Configurations;
 using Finity.Retry.Exceptions;
+using Finity.Shared;
 using Microsoft.Extensions.Options;
 
 namespace Finity.Retry.Internals

@@ -9,7 +9,6 @@ namespace Finity.CircuitBreaker.Internals
     {
         private readonly ConcurrentDictionary<string, MetricItem> _metrics = new();
         private readonly IClock _clock;
-
         public CircuitBreakerMetric(IClock clock)
         {
             _clock = clock;

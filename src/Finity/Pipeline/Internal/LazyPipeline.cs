@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Finity.Core;
 using Finity.Pipeline.Abstractions;
 using Finity.Pipeline.Exceptions;
+using Finity.Shared;
 using Microsoft.Extensions.Options;
 
 namespace Finity.Pipeline.Internal
