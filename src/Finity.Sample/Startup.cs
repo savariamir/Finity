@@ -1,15 +1,11 @@
 using System;
-using System.Net.Http;
 using Finity.Extensions;
-using Finity.Monitoring;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Polly;
-using Polly.Extensions.Http;
 
 namespace Finity.Sample
 {
@@ -40,7 +36,6 @@ namespace Finity.Sample
                     a.RetryCount = 5;
                     a.SleepDurationRetry = TimeSpan.FromSeconds(1);
                 })
-                .AddPrometheus()
                 .WithCircuitBreaker(a =>
                 {
                     a.DurationOfBreak = TimeSpan.Zero;

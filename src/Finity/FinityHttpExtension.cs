@@ -18,14 +18,14 @@ using Finity.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 
-namespace Finity.Extensions
+namespace Finity
 {
     public static class FinityHttpExtension
     {
         private static Action<MetricValue> _setGlobalMetric;
 
         public static IHttpClientBuilder TryAddFinity(this IHttpClientBuilder builder,
-            Action<MetricValue> setInputMetric = null)
+            Action<MetricValue> setInputMetric = null!)
         {
             builder.Services.AddTransient<DefaultMiddleware>();
 
@@ -40,7 +40,8 @@ namespace Finity.Extensions
             };
 
             Action<MetricValue> setMetric = (_) => { };
-            builder.Services.AddTransient<IMetricProxy>(_ => new MetricProxy(setMetric));
+            var metric = setMetric;
+            builder.Services.AddTransient<IMetricProxy>(_ => new MetricProxy(metric));
 
 
             if (setInputMetric is not null)
