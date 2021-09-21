@@ -6,10 +6,11 @@ using Finity.CircuitBreaker.Abstractions;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 
 namespace Finity.CircuitBreaker.Internals
 {
-    public class CircuitBreakerMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class CircuitBreakerMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
         private readonly ICircuitBreakerEngine _engine;
 
@@ -18,14 +19,14 @@ namespace Finity.CircuitBreaker.Internals
             _engine = engine;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(
-            AnshanHttpRequestMessage request,
+        public async Task<HttpResponseMessage> ExecuteAsync(
+            FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
-            return await _engine.ExecuteAsync(request, next);
+            return await _engine.ExecuteAsync(request, next,setMetric);
         }
 
         public Type MiddlewareType { get; set; } =

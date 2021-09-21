@@ -1,10 +1,7 @@
-using System.Collections.Concurrent;
-
-namespace Finity.Shared
+namespace Finity.Shared.Metrics
 {
     public static class Metrics
     {
-        public static ConcurrentDictionary<string, MetricValue> Items = new();
         private const string Suffix = "dotnet_finity_";
         public static readonly string CircuitBreakerOpenedCount = $"{Suffix}circuit_breaker_opened_count";
         public static readonly string CircuitBreakerClosedCount = $"{Suffix}circuit_breaker_closed_count";
@@ -14,13 +11,6 @@ namespace Finity.Shared
         public static readonly string AverageExecutionTimeMilliseconds = $"{Suffix}average_execution_time_milliseconds";
         public static readonly string FirstTryCount = $"{Suffix}first_try_count";
         public static readonly string NextTryCount = $"{Suffix}next_try_count";
-
-        public static void TryAdd(string name, GaugeValue value)
-        {
-        }
-        
-        public static void Increment(string name)
-        {
-        }
+        public static readonly string LastExecution = $"{Suffix}last_execution";
     }
 }

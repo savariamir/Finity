@@ -8,12 +8,12 @@ namespace Finity.Default
 {
     public class DefaultDelegationHandler : DelegatingHandler
     {
-        private readonly IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> _pipeline;
+        private readonly IPipeline<FinityHttpRequestMessage, HttpResponseMessage> _pipeline;
         private readonly string _clientName;
 
         public DefaultDelegationHandler(
             string clientName,
-            IPipeline<AnshanHttpRequestMessage, HttpResponseMessage> serviceProvider)
+            IPipeline<FinityHttpRequestMessage, HttpResponseMessage> serviceProvider)
         {
             _clientName = clientName;
             _pipeline = serviceProvider;
@@ -23,7 +23,7 @@ namespace Finity.Default
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var response = await _pipeline.RunAsync(new AnshanHttpRequestMessage
+            var response = await _pipeline.RunAsync(new FinityHttpRequestMessage
             {
                 HttpRequest = request,
                 SendAsync = () => base.SendAsync(request, cancellationToken),

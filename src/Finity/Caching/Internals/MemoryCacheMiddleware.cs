@@ -7,13 +7,14 @@ using Finity.Caching.Configurations;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Finity.Caching.Internals
 {
-    public class MemoryCacheMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class MemoryCacheMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IMemoryCache _cache;
         private readonly IOptionsSnapshot<CacheConfigure> _options;
@@ -27,8 +28,8 @@ namespace Finity.Caching.Internals
             _logger = logger;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(
-            AnshanHttpRequestMessage request,
+        public async Task<HttpResponseMessage> ExecuteAsync(
+            FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
@@ -56,7 +57,7 @@ namespace Finity.Caching.Internals
             return response;
         }
 
-        private void SetToCache(AnshanHttpRequestMessage request, HttpResponseMessage response)
+        private void SetToCache(FinityHttpRequestMessage request, HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode) return;
 

@@ -1,5 +1,0 @@
-namespace Finity.Metric
-{
-  
-    
-}

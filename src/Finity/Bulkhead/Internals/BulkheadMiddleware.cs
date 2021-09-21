@@ -7,10 +7,11 @@ using Finity.Locking;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 
 namespace Finity.Bulkhead.Internal
 {
-    public class BulkheadMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class BulkheadMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IBulkheadLockProvider _bulkheadLockProvider;
 
@@ -19,8 +20,8 @@ namespace Finity.Bulkhead.Internal
             _bulkheadLockProvider = bulkheadLockProvider;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(
-            AnshanHttpRequestMessage request,
+        public async Task<HttpResponseMessage> ExecuteAsync(
+            FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,

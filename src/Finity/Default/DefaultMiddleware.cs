@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 
 namespace Finity.Default
 {
-    public class DefaultMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class DefaultMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IMetricProxy _metricProxy;
 
@@ -17,18 +18,18 @@ namespace Finity.Default
             _metricProxy = metricProxy;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(
-            AnshanHttpRequestMessage request,
+        public async Task<HttpResponseMessage> ExecuteAsync(
+            FinityHttpRequestMessage request,
             IPipelineContext context,
-            Func<Type,Task<HttpResponseMessage>> next,
+            Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
-            var response = await _metricProxy.ExecuteAsync(request.Name, request.SendAsync);
+            var response = await _metricProxy.ExecuteAsync(request);
             return response;
         }
 
-        Type IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>.MiddlewareType { get; set; } 
+        public Type MiddlewareType { get; set; }
             = typeof(DefaultMiddleware);
     }
 }

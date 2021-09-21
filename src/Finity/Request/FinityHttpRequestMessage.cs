@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Finity.Request
 {
-    public class AnshanHttpRequestMessage
+    public class FinityHttpRequestMessage
     {
         public Func<Task<HttpResponseMessage>> SendAsync { set; get; }
         public HttpRequestMessage HttpRequest { set; get; }  

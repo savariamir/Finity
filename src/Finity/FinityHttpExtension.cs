@@ -22,6 +22,7 @@ using Finity.Retry.Configurations;
 using Finity.Retry.Extensions;
 using Finity.Retry.Internals;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 
@@ -29,7 +30,7 @@ namespace Finity
 {
     public static class FinityHttpExtension
     {
-        private static Action<MetricValue> _setGlobalMetric;
+        private static Action<MetricValue>? _setGlobalMetric;
 
         public static IHttpClientBuilder WithRetry(this IHttpClientBuilder builder,
             Action<RetryConfigure> configure)
@@ -113,7 +114,7 @@ namespace Finity
             builder.AddHttpMessageHandler((sp) =>
             {
                 var pipeline =
-                    new LazyPipeline<AnshanHttpRequestMessage, HttpResponseMessage>(
+                    new LazyPipeline<FinityHttpRequestMessage, HttpResponseMessage>(
                         sp, middlewares, setMetric,
                         builder.Name);
                 return new DefaultDelegationHandler(builder.Name, pipeline);

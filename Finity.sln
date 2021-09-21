@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity", "src\Finity\Finity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Sample", "src\Finity.Sample\Finity.Sample.csproj", "{B00F10C5-541A-4017-A212-D3D7DE4992B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Monitoring", "src\Finity.Monitoring\Finity.Monitoring.csproj", "{8C129019-02FA-4D06-8C2A-537B897B613C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Prometheus", "src\Finity.Prometheus\Finity.Prometheus.csproj", "{8C129019-02FA-4D06-8C2A-537B897B613C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

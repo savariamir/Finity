@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 
 namespace Finity.Authentication
 {
-    public class AuthenticationMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
+    public class AuthenticationMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
         private readonly ITokenProvider _tokenProvider;
 
@@ -18,8 +19,8 @@ namespace Finity.Authentication
             _tokenProvider = tokenProvider;
         }
 
-        public async Task<HttpResponseMessage> RunAsync(
-            AnshanHttpRequestMessage request, 
+        public async Task<HttpResponseMessage> ExecuteAsync(
+            FinityHttpRequestMessage request, 
             IPipelineContext context,
             Func<Type,Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,

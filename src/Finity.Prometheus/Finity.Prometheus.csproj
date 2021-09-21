@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <AssemblyName>Finity.Prometheus</AssemblyName>
+        <RootNamespace>Finity.Prometheus</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

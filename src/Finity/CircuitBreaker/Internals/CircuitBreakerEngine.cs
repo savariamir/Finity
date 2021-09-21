@@ -10,6 +10,7 @@ using Finity.Extensions;
 using Finity.Locking;
 using Finity.Request;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -40,16 +41,18 @@ namespace Finity.CircuitBreaker.Internals
         }
 
 
-        public async Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
-            Func<Type, Task<HttpResponseMessage>> next)
+        public async Task<HttpResponseMessage> ExecuteAsync(
+            FinityHttpRequestMessage request,
+            Func<Type, Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric)
         {
             if (IsCircuitClosed(request.Name))
             {
-                return await PassRequest(next, request.Name);
+                return await PassRequest(next, setMetric, request.Name);
             }
 
             //Report that circuit is open
-            Metrics.Increment(Metrics.CircuitBreakerOpenedCount);
+            // setMetric(new CounterValue());
 
             return await TryInOpenCircuit(next, request.Name);
         }
@@ -101,6 +104,7 @@ namespace Finity.CircuitBreaker.Internals
 
         private async Task<HttpResponseMessage> PassRequest(
             Func<Type, Task<HttpResponseMessage>> next,
+            Action<MetricValue> setMetric,
             string name)
         {
             var response = await next(typeof(CircuitBreakerMiddleware));
@@ -117,7 +121,7 @@ namespace Finity.CircuitBreaker.Internals
 
             //report: Circuit is open
             _logger.LogInformation("Circuit got open");
-            Metrics.Increment(Metrics.CircuitBreakerClosedCount);
+            // setMetric(new CounterValue());
             _circuitBreakerStateProvider.Trip(name);
 
             return response;
@@ -136,7 +140,7 @@ namespace Finity.CircuitBreaker.Internals
                 _metric.IncrementSuccess(name);
 
                 if (configure.SuccessAllowedBeforeClosing > _metric.GetSuccess(name)) return response;
-                
+
                 //circuit is closed
                 _logger.LogInformation("Circuit got closed");
                 _circuitBreakerStateProvider.Reset(name);
@@ -146,7 +150,7 @@ namespace Finity.CircuitBreaker.Internals
 
             _metric.IncrementFailure(name);
             _circuitBreakerStateProvider.Trip(name);
-            
+
             throw new CircuitBreakerOpenException("");
         }
     }

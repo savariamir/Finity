@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Finity.Pipeline.Abstractions;
 using Finity.Pipeline.Exceptions;
 using Finity.Shared;
+using Finity.Shared.Metrics;
 using Microsoft.Extensions.Options;
 
 namespace Finity.Pipeline.Internal
@@ -55,7 +56,7 @@ namespace Finity.Pipeline.Internal
                     throw new MiddlewareNotResolvedException(middlewareType);
                 }
 
-                return middleware.RunAsync(request, context, Next, _setMetric, cancellationToken);
+                return middleware.ExecuteAsync(request, context, Next, _setMetric, cancellationToken);
             }
 
             return Next(null);

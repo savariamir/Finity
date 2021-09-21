@@ -1,10 +1,12 @@
 using System;
+using Finity.Prometheus;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 
 namespace Finity.Sample
 {
@@ -38,7 +40,8 @@ namespace Finity.Sample
                     a.DurationOfBreak = TimeSpan.Zero;
                     a.ExceptionsAllowedBeforeBreaking = 2;
                     a.SuccessAllowedBeforeClosing = 1;
-                });
+                })
+                .WithPrometheus();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,10 +57,15 @@ namespace Finity.Sample
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseHttpMetrics();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapMetrics();
+            });
         }
     }
 }
