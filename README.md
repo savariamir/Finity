@@ -9,6 +9,10 @@ Finity is a lightweight fault tolerance library designed to isolate access to re
 # Using Finity with HttpClient factory from ASPNET Core
 Finity extends .Net Core HttpClient Factory to avoid transienting faults.
 
+# Installing via NuGet
+
+    Install-Package Finity
+
 # Retry
 
 ```c#
