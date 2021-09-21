@@ -1,4 +1,4 @@
-namespace Finity.Bulkhead
+namespace Finity.Bulkhead.Configurations
 {
     public class BulkheadConfigure
     {

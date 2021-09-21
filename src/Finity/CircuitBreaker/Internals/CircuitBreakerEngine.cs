@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Finity.CircuitBreaker.Abstractions;
 using Finity.CircuitBreaker.Configurations;
 using Finity.CircuitBreaker.Exceptions;
+using Finity.Clock;
 using Finity.Extensions;
 using Finity.Locking;
 using Finity.Request;
 using Finity.Shared;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Finity.CircuitBreaker.Internals
@@ -19,31 +21,42 @@ namespace Finity.CircuitBreaker.Internals
         private readonly ICircuitBreakerStateProvider _circuitBreakerStateProvider;
         private readonly ICircuitBreakerLockProvider _lockProvider;
         private readonly ICircuitBreakerMetric _metric;
+        private readonly IClock _clock;
+        private readonly ILogger<CircuitBreakerEngine> _logger;
 
         public CircuitBreakerEngine(IOptionsSnapshot<CircuitBreakerConfigure> options,
-                                    ICircuitBreakerLockProvider lockProvider,
-                                    ICircuitBreakerStateProvider circuitBreakerStateProvider,
-                                    ICircuitBreakerMetric metric)
+            ICircuitBreakerLockProvider lockProvider,
+            ICircuitBreakerStateProvider circuitBreakerStateProvider,
+            ICircuitBreakerMetric metric,
+            IClock clock,
+            ILogger<CircuitBreakerEngine> logger)
         {
             _options = options;
             _lockProvider = lockProvider;
             _circuitBreakerStateProvider = circuitBreakerStateProvider;
             _metric = metric;
+            _clock = clock;
+            _logger = logger;
         }
 
 
         public async Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
-                                                             Func<Type,Task<HttpResponseMessage>> next)
+            Func<Type, Task<HttpResponseMessage>> next)
         {
-            if (_circuitBreakerStateProvider.GetState(request.Name) == CircuitBreakerState.Closed)
+            if (IsCircuitClosed(request.Name))
             {
-                return await ExecuteIfCircuitIsCloseAsync(next, request.Name);
+                return await PassRequest(next, request.Name);
             }
 
             //Report that circuit is open
             Metrics.Increment(Metrics.CircuitBreakerOpenedCount);
 
-            return await TryExecutingIfCircuitIsOpenAsync(next, request.Name);
+            return await TryInOpenCircuit(next, request.Name);
+        }
+
+        private bool IsCircuitClosed(string name)
+        {
+            return _circuitBreakerStateProvider.GetState(name) == CircuitBreakerState.Closed;
         }
 
         private SemaphoreSlim TrySemaphore(string name)
@@ -51,7 +64,7 @@ namespace Finity.CircuitBreaker.Internals
             lock (name)
             {
                 var semaphore = _lockProvider.TrySemaphore(name);
-                if (semaphore is not { CurrentCount: 0 })
+                if (semaphore is not {CurrentCount: 0})
                 {
                     return semaphore;
                 }
@@ -61,23 +74,16 @@ namespace Finity.CircuitBreaker.Internals
             }
         }
 
-        private async Task<HttpResponseMessage> TryExecutingIfCircuitIsOpenAsync( Func<Type,Task<HttpResponseMessage>> next,
+        private async Task<HttpResponseMessage> TryInOpenCircuit(
+            Func<Type, Task<HttpResponseMessage>> next,
             string name)
         {
             VerifyTimeout(name);
 
             using (await TrySemaphore(name).EnterAsync())
             {
-                var response = await ExecuteIfCircuitIsOpenAsync(next, name);
-
-                if (response.IsSucceed())
-                {
-                    _metric.IncrementSuccess(name);
-                    return response;
-                }
-
-                _metric.IncrementFailure(name);
-                throw new CircuitBreakerOpenException("");
+                var response = await TryHalfOpen(next, name);
+                return response;
             }
         }
 
@@ -87,17 +93,18 @@ namespace Finity.CircuitBreaker.Internals
             var dateTime =
                 new DateTime(configure.DurationOfBreak.Ticks + _metric.GetLastFailureDateTimeUtc(name).Ticks);
 
-            if (dateTime >= DateTime.UtcNow)
+            if (dateTime >= _clock.UtcNow())
             {
                 throw new CircuitBreakerOpenException("");
             }
         }
 
-        private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync( Func<Type,Task<HttpResponseMessage>>  next,
-                                                                             string name)
+        private async Task<HttpResponseMessage> PassRequest(
+            Func<Type, Task<HttpResponseMessage>> next,
+            string name)
         {
             var response = await next(typeof(CircuitBreakerMiddleware));
-            if (response.IsSucceed())
+            if (response.IsSuccessful())
             {
                 return response;
             }
@@ -106,40 +113,41 @@ namespace Finity.CircuitBreaker.Internals
             _metric.IncrementFailure(name);
 
             if (configure.ExceptionsAllowedBeforeBreaking >= _metric.GetFailures(name)) return response;
-            
-            
-            //report: Circuit is opened
+
+
+            //report: Circuit is open
+            _logger.LogInformation("Circuit got open");
             Metrics.Increment(Metrics.CircuitBreakerClosedCount);
             _circuitBreakerStateProvider.Trip(name);
 
             return response;
         }
 
-        private async Task<HttpResponseMessage> ExecuteIfCircuitIsOpenAsync( Func<Type,Task<HttpResponseMessage>> next,
-                                                                            string name)
+        private async Task<HttpResponseMessage> TryHalfOpen(Func<Type, Task<HttpResponseMessage>> next,
+            string name)
         {
             // Set the circuit breaker state to HalfOpen.
             _circuitBreakerStateProvider.HalfOpen(name);
 
             var response = await next(typeof(CircuitBreakerMiddleware));
-            if (response.IsSucceed())
+            if (response.IsSuccessful())
             {
                 var configure = _options.Get(name);
                 _metric.IncrementSuccess(name);
 
-                if (configure.SuccessAllowedBeforeClosing <= _metric.GetSuccess(name))
-                {
-                    //circuit is closed
-                    _circuitBreakerStateProvider.Reset(name);
-                }
+                if (configure.SuccessAllowedBeforeClosing > _metric.GetSuccess(name)) return response;
+                
+                //circuit is closed
+                _logger.LogInformation("Circuit got closed");
+                _circuitBreakerStateProvider.Reset(name);
 
                 return response;
             }
 
             _metric.IncrementFailure(name);
             _circuitBreakerStateProvider.Trip(name);
-
-            return response;
+            
+            throw new CircuitBreakerOpenException("");
         }
     }
 }

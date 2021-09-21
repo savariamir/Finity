@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using Finity.Bulkhead.Abstractions;
 
-namespace Finity.Bulkhead
+namespace Finity.Bulkhead.Internal
 {
     public class BulkheadLockProvider : IBulkheadLockProvider
     {
@@ -15,7 +17,7 @@ namespace Finity.Bulkhead
         public SemaphoreSlim TrySemaphore(string name)
         {
             SemaphoreSlims.TryGetValue(name, out var semaphore);
-            return semaphore;
+            return semaphore ?? throw new InvalidOperationException("Semaphore is null");
         }
     }
 }

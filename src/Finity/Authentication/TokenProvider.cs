@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Finity.Caching;
+using Finity.Caching.Abstractions;
+using Finity.Caching.Internals;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 

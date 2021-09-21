@@ -2,12 +2,13 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Bulkhead.Abstractions;
 using Finity.Locking;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
 
-namespace Finity.Bulkhead
+namespace Finity.Bulkhead.Internal
 {
     public class BulkheadMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
@@ -21,7 +22,7 @@ namespace Finity.Bulkhead
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request,
             IPipelineContext context,
-            Func<Type,Task<HttpResponseMessage>> next,
+            Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
@@ -32,8 +33,8 @@ namespace Finity.Bulkhead
                 return await next(MiddlewareType);
             }
         }
-        
-       public Type MiddlewareType { get; set; } 
+
+        public Type MiddlewareType { get; set; }
             = typeof(BulkheadMiddleware);
     }
 }

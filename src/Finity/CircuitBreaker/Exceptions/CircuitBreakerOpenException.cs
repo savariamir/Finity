@@ -8,4 +8,4 @@ namespace Finity.CircuitBreaker.Exceptions
         {
         }
     }
-}
+}   

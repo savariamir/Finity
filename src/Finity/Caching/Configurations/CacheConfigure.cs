@@ -1,6 +1,6 @@
 using System;
 
-namespace Finity.Caching
+namespace Finity.Caching.Configurations
 {
     public class CacheConfigure
     {

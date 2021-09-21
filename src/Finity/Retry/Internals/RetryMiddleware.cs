@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Finity.Clock;
 using Finity.Extensions;
-using Finity.Metric;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Retry.Configurations;
@@ -31,15 +30,15 @@ namespace Finity.Retry.Internals
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request,
             IPipelineContext context,
-            Func<Type,Task<HttpResponseMessage>> next,
+            Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var firstResponse = await ExecuteFirstTryAsync(next);
-            if (!firstResponse.IsSucceed())
+            if (!firstResponse.IsSuccessful())
             {
                 return await ExecuteNextTriesAsync(request, next, cancellationToken);
-            }   
+            }
 
             //Report Metrics for the first try
             setMetric(new CounterValue());
@@ -47,24 +46,25 @@ namespace Finity.Retry.Internals
             return firstResponse;
         }
 
-        private async Task<HttpResponseMessage> ExecuteFirstTryAsync(Func<Type,Task<HttpResponseMessage>> next)
+        private async Task<HttpResponseMessage> ExecuteFirstTryAsync(Func<Type, Task<HttpResponseMessage>> next)
         {
             var response = await next(MiddlewareType);
             return response;
         }
 
-        private async Task<HttpResponseMessage> ExecuteNextTriesAsync(AnshanHttpRequestMessage request,
-            Func<Type,Task<HttpResponseMessage>> next,
+        private async Task<HttpResponseMessage> ExecuteNextTriesAsync(
+            AnshanHttpRequestMessage request,
+            Func<Type, Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
             var retryConfigure = _options.Get(request.Name);
             for (var i = 0; i < retryConfigure.RetryCount; i++)
             {
                 var response = await next(MiddlewareType);
-                if (response.IsSucceed())
+                if (response.IsSuccessful())
                 {
                     //Report Metrics for next tries
-                    _logger.LogInformation($"succeeded after {i+1} tries");
+                    _logger.LogInformation($"Succeeded after {i + 2} tries");
                     Metrics.Increment(Metrics.NextTryCount);
                     return response;
                 }
@@ -73,10 +73,10 @@ namespace Finity.Retry.Internals
                     await _clock.SleepAsync(retryConfigure.SleepDurationRetry, cancellationToken);
             }
 
-            throw new RetryOutOfRangeException();
+            throw new RetryOutOfRangeException($"Fails after {retryConfigure.RetryCount} tries");
         }
-        
-       public Type MiddlewareType { get; set; } 
+
+        public Type MiddlewareType { get; set; }
             = typeof(RetryMiddleware);
     }
 }

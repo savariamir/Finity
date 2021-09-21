@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Finity.Bulkhead
+namespace Finity.Bulkhead.Abstractions
 {
     public interface IBulkheadLockProvider
     {

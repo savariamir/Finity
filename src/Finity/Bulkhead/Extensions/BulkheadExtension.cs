@@ -1,8 +1,11 @@
 using System;
+using Finity.Bulkhead.Abstractions;
+using Finity.Bulkhead.Configurations;
+using Finity.Bulkhead.Internal;
 using Finity.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Finity.Bulkhead
+namespace Finity.Bulkhead.Extensions
 {
     public static class BulkheadExtension
     {

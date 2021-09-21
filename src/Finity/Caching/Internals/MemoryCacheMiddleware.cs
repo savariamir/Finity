@@ -2,6 +2,8 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Caching.Abstractions;
+using Finity.Caching.Configurations;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
@@ -9,7 +11,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Finity.Caching
+namespace Finity.Caching.Internals
 {
     public class MemoryCacheMiddleware : IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>
     {
@@ -17,7 +19,8 @@ namespace Finity.Caching
         private readonly IOptionsSnapshot<CacheConfigure> _options;
         private readonly ILogger<MemoryCacheMiddleware> _logger;
 
-        public MemoryCacheMiddleware(IMemoryCache cache, IOptionsSnapshot<CacheConfigure> options, ILogger<MemoryCacheMiddleware> logger)
+        public MemoryCacheMiddleware(IMemoryCache cache, IOptionsSnapshot<CacheConfigure> options,
+            ILogger<MemoryCacheMiddleware> logger)
         {
             _cache = cache;
             _options = options;
@@ -27,19 +30,23 @@ namespace Finity.Caching
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request,
             IPipelineContext context,
-            Func<Type,Task<HttpResponseMessage>> next,
+            Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
-            if (request.HttpRequest.RequestUri is null) throw new Exception("");
+            if (request.HttpRequest.RequestUri is null) throw new Exception("Request uri is not allowed to be empty");
+
+            if (request.HttpRequest.Method != HttpMethod.Get) return await next(MiddlewareType);
 
             var cacheValue =
-                GetFromCache(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()));
+                GetFromCache(
+                    CacheKey.GetKey(
+                        request.HttpRequest.RequestUri.ToString()));
 
             if (cacheValue.Hit)
             {
                 //Report that cache hits
-                _logger.LogInformation("Data is read from cache", DateTimeOffset.UtcNow);
+                _logger.LogInformation("Data was read from cache", DateTimeOffset.UtcNow);
                 return cacheValue.Data;
             }
 
@@ -65,8 +72,8 @@ namespace Finity.Caching
             var data = _cache.Get<HttpResponseMessage>(cacheKey);
             return new CacheResult<HttpResponseMessage>(data);
         }
-        
-       public Type MiddlewareType { get; set; } 
+
+        public Type MiddlewareType { get; set; }
             = typeof(MemoryCacheMiddleware);
     }
 }

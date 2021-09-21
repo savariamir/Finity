@@ -1,8 +1,10 @@
 using System;
+using Finity.Caching.Configurations;
+using Finity.Caching.Internals;
 using Finity.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Finity.Caching
+namespace Finity.Caching.Extenstions
 {
     public static class CacheExtension
     {

@@ -31,8 +31,6 @@ namespace Finity.Pipeline.Internal
         {
             IPipelineContext context = new PipelineContext();
 
-            var index = 0;
-
             var middlewares = _middlewareTypes.Where(middlewareType =>
                     _options.Types.Contains(middlewareType))
                 .ToArray();
