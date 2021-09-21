@@ -26,8 +26,6 @@ namespace Finity.Sample
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "Finity.Sample", Version = "v1"});
             });
-
-
             services.AddHttpClient("finity")
                 .WithBulkhead(a => { a.MaxConcurrentCalls = 12; })
                 .WithCache(a => { a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); })

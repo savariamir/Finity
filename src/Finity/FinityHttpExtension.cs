@@ -9,6 +9,7 @@ using Finity.CircuitBreaker.Extensions;
 using Finity.CircuitBreaker.Internals;
 using Finity.Default;
 using Finity.Pipeline;
+using Finity.Pipeline.Abstractions;
 using Finity.Pipeline.Internal;
 using Finity.Request;
 using Finity.Retry.Configurations;
@@ -27,6 +28,7 @@ namespace Finity
         public static IHttpClientBuilder TryAddFinity(this IHttpClientBuilder builder,
             Action<MetricValue> setInputMetric = null!)
         {
+
             builder.Services.AddTransient<DefaultMiddleware>();
 
             var middlewares = new List<Type>

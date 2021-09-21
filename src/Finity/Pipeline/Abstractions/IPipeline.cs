@@ -9,8 +9,9 @@ namespace Finity.Pipeline.Abstractions
                                  CancellationToken cancellationToken = default);
     }
     
-    public interface IPipeline<TResponse>
+    public interface IPipeline1<in TRequest, TResponse>
     {
-        Task<TResponse> RunAsync(CancellationToken cancellationToken = default);
+        Task<TResponse> RunAsync(TRequest request,
+            CancellationToken cancellationToken = default);
     }
 }

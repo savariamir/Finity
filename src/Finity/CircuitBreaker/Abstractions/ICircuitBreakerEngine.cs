@@ -8,6 +8,6 @@ namespace Finity.CircuitBreaker.Abstractions
     public interface ICircuitBreakerEngine
     {
         Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
-            Func<Task<HttpResponseMessage>> next);
+            Func<Type,Task<HttpResponseMessage>> next);
     }
 }

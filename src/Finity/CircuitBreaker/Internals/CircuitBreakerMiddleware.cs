@@ -21,11 +21,14 @@ namespace Finity.CircuitBreaker.Internals
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request,
             IPipelineContext context,
-            Func<Task<HttpResponseMessage>> next,
+            Func<Type, Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             return await _engine.ExecuteAsync(request, next);
         }
+
+        public Type MiddlewareType { get; set; } =
+            typeof(CircuitBreakerMiddleware);
     }
 }

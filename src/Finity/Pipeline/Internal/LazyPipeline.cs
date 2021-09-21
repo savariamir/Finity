@@ -17,7 +17,8 @@ namespace Finity.Pipeline.Internal
         private readonly Action<MetricValue> _setMetric;
         private readonly AnshanFactoryOptions _options;
 
-        public LazyPipeline(IServiceProvider serviceProvider, IEnumerable<Type> middlewareTypes,Action<MetricValue> setMetric, string clientName)
+        public LazyPipeline(IServiceProvider serviceProvider, IEnumerable<Type> middlewareTypes,
+            Action<MetricValue> setMetric, string clientName)
         {
             _serviceProvider = serviceProvider;
             _setMetric = setMetric;
@@ -33,27 +34,33 @@ namespace Finity.Pipeline.Internal
             var index = 0;
 
             var middlewares = _middlewareTypes.Where(middlewareType =>
-                                                  _options.Types.Contains(middlewareType))
-                                              .ToArray();
-            
-            Task<TResponse> Next()
-            {
-                if (middlewares.Length == index)
-                {
-                    return Task.FromResult<TResponse>(default);
-                }
+                    _options.Types.Contains(middlewareType))
+                .ToArray();
 
-                var middlewareType = middlewares[index++];
+            Task<TResponse> Next(Type? type)
+            {
+                Type middlewareType = type is null ? middlewares.First() : middlewares.First(p => p == type);
+
+                if (type is not null)
+                {
+                    var nextIndexType = Array.IndexOf(middlewares, middlewareType) + 1;
+                    if (nextIndexType >= middlewares.Length)
+                    {
+                        return Task.FromResult<TResponse>(default);
+                    }
+
+                    middlewareType = middlewares[nextIndexType];
+                }
 
                 if (_serviceProvider.GetService(middlewareType) is not IMiddleware<TRequest, TResponse> middleware)
                 {
                     throw new MiddlewareNotResolvedException(middlewareType);
                 }
 
-                return middleware.RunAsync(request, context, Next,_setMetric ,cancellationToken);
+                return middleware.RunAsync(request, context, Next, _setMetric, cancellationToken);
             }
 
-            return Next();
+            return Next(null);
         }
     }
 }

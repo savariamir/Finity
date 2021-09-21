@@ -21,7 +21,7 @@ namespace Finity.Bulkhead
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request,
             IPipelineContext context,
-            Func<Task<HttpResponseMessage>> next,
+            Func<Type,Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
@@ -29,8 +29,11 @@ namespace Finity.Bulkhead
                 .TrySemaphore(request.Name)
                 .EnterAsync(cancellationToken))
             {
-                return await next();
+                return await next(MiddlewareType);
             }
         }
+        
+       public Type MiddlewareType { get; set; } 
+            = typeof(BulkheadMiddleware);
     }
 }

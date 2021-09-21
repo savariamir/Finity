@@ -21,7 +21,7 @@ namespace Finity.Authentication
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request, 
             IPipelineContext context,
-            Func<Task<HttpResponseMessage>> next,
+            Func<Type,Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
@@ -29,7 +29,10 @@ namespace Finity.Authentication
             request.HttpRequest.Headers.Authorization = 
                 new AuthenticationHeaderValue("Bearer", token);
 
-            return await next();
+            return await next(MiddlewareType);
         }
+        
+        public Type MiddlewareType { get; set; } 
+            = typeof(AuthenticationMiddleware);
     }
 }

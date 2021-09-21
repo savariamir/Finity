@@ -7,7 +7,6 @@ using Finity.CircuitBreaker.Configurations;
 using Finity.CircuitBreaker.Exceptions;
 using Finity.Extensions;
 using Finity.Locking;
-using Finity.Metric;
 using Finity.Request;
 using Finity.Shared;
 using Microsoft.Extensions.Options;
@@ -34,7 +33,7 @@ namespace Finity.CircuitBreaker.Internals
 
 
         public async Task<HttpResponseMessage> ExecuteAsync(AnshanHttpRequestMessage request,
-                                                            Func<Task<HttpResponseMessage>> next)
+                                                             Func<Type,Task<HttpResponseMessage>> next)
         {
             if (_circuitBreakerStateProvider.GetState(request.Name) == CircuitBreakerState.Closed)
             {
@@ -62,7 +61,7 @@ namespace Finity.CircuitBreaker.Internals
             }
         }
 
-        private async Task<HttpResponseMessage> TryExecutingIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
+        private async Task<HttpResponseMessage> TryExecutingIfCircuitIsOpenAsync( Func<Type,Task<HttpResponseMessage>> next,
             string name)
         {
             VerifyTimeout(name);
@@ -94,10 +93,10 @@ namespace Finity.CircuitBreaker.Internals
             }
         }
 
-        private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync(Func<Task<HttpResponseMessage>> next,
+        private async Task<HttpResponseMessage> ExecuteIfCircuitIsCloseAsync( Func<Type,Task<HttpResponseMessage>>  next,
                                                                              string name)
         {
-            var response = await next();
+            var response = await next(typeof(CircuitBreakerMiddleware));
             if (response.IsSucceed())
             {
                 return response;
@@ -116,13 +115,13 @@ namespace Finity.CircuitBreaker.Internals
             return response;
         }
 
-        private async Task<HttpResponseMessage> ExecuteIfCircuitIsOpenAsync(Func<Task<HttpResponseMessage>> next,
+        private async Task<HttpResponseMessage> ExecuteIfCircuitIsOpenAsync( Func<Type,Task<HttpResponseMessage>> next,
                                                                             string name)
         {
             // Set the circuit breaker state to HalfOpen.
             _circuitBreakerStateProvider.HalfOpen(name);
 
-            var response = await next();
+            var response = await next(typeof(CircuitBreakerMiddleware));
             if (response.IsSucceed())
             {
                 var configure = _options.Get(name);

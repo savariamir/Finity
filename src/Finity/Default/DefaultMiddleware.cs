@@ -20,12 +20,15 @@ namespace Finity.Default
         public async Task<HttpResponseMessage> RunAsync(
             AnshanHttpRequestMessage request,
             IPipelineContext context,
-            Func<Task<HttpResponseMessage>> next,
+            Func<Type,Task<HttpResponseMessage>> next,
             Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var response = await _metricProxy.ExecuteAsync(request.Name, request.SendAsync);
             return response;
         }
+
+        Type IMiddleware<AnshanHttpRequestMessage, HttpResponseMessage>.MiddlewareType { get; set; } 
+            = typeof(DefaultMiddleware);
     }
 }
