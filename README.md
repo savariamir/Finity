@@ -62,7 +62,7 @@ services
 
 # Prometheus
 
-# Installing via NuGet
+## Installing via NuGet
   Install-Package Finity.Prometheus
 
 ```c#
