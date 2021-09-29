@@ -59,3 +59,14 @@ services
         options.MaxConcurrentCalls = 100;
     });
 ```
+
+# Prometheus
+
+## Installing via NuGet
+  Install-Package Finity.Prometheus
+
+```c#
+services
+    .AddHttpClient("finity")
+    .WithPrometheus();
+```
