@@ -2,8 +2,15 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <AssemblyName>Finity.Prometheus</AssemblyName>
-        <RootNamespace>Finity.Prometheus</RootNamespace>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Amir Savari</Authors>
+        <Title>Finity</Title>
+        <Description>Fault tolerance library designed for .Net core</Description>
+        <PackageProjectUrl>https://github.com/savariamir/Finity</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/savariamir/Finity</RepositoryUrl>
+        <PackageTags>fault-tolerance</PackageTags>
+        <Version>0.1.4</Version>
     </PropertyGroup>
 
     <ItemGroup>
