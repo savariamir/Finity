@@ -28,7 +28,7 @@ namespace Finity.Default
             return response;
         }
 
-        public Type MiddlewareType { get; set; }
+        public Type Type { get; set; }
             = typeof(DefaultMiddleware);
     }
 }

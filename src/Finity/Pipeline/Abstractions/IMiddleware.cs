@@ -13,6 +13,6 @@ namespace Finity.Pipeline.Abstractions
             Func<Type,Task<TResponse>> next,
             CancellationToken cancellationToken);
 
-        Type MiddlewareType {  set; get; }
+        Type Type {  set; get; }
     }
-}
+}   

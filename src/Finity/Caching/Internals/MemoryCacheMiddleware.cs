@@ -2,30 +2,26 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Finity.Caching.Abstractions;
-using Finity.Caching.Configurations;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
 using Finity.Shared.Metrics;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Finity.Caching.Internals
 {
-    public class MemoryCacheMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
+    internal class MemoryCacheMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
-        private readonly IMemoryCache _cache;
-        private readonly IOptionsSnapshot<CacheConfigure> _options;
+        private readonly IMemoryCacheProvider _cache;
         private readonly ILogger<MemoryCacheMiddleware> _logger;
         private readonly IMetricProvider _metricProvider;
 
-        public MemoryCacheMiddleware(IMemoryCache cache, IOptionsSnapshot<CacheConfigure> options,
-            ILogger<MemoryCacheMiddleware> logger, IMetricProvider metricProvider)
+        public MemoryCacheMiddleware(
+            IMemoryCacheProvider cache,
+            ILogger<MemoryCacheMiddleware> logger,
+            IMetricProvider metricProvider)
         {
             _cache = cache;
-            _options = options;
             _logger = logger;
             _metricProvider = metricProvider;
         }
@@ -38,48 +34,32 @@ namespace Finity.Caching.Internals
         {
             if (request.HttpRequest.RequestUri is null) throw new Exception("Request uri is not allowed to be empty");
 
-            if (request.HttpRequest.Method != HttpMethod.Get) return await next(MiddlewareType);
-
-            var cacheValue =
-                GetFromCache(
-                    CacheKey.GetKey(
-                        request.HttpRequest.RequestUri.ToString()));
-
-            if (cacheValue.Hit)
+            // Get Http Method is just going to be cached
+            if (request.HttpRequest.Method != HttpMethod.Get)
             {
-                //Report that cache hits
-                _metricProvider.AddMetric(MetricFactory.CreateCounter(
-                    request.Name,
-                    request.HttpRequest, 
-                    Metrics.CacheHit,string.Empty));
-                _logger.LogInformation("Data was read from cache", DateTimeOffset.UtcNow);
-                return cacheValue.Data;
+                return await next(Type);
             }
 
-            var response = await next(MiddlewareType);
-            SetToCache(request, response);
+            var cacheValue =
+                _cache.GetFromCache(request.HttpRequest.RequestUri.ToString());
 
-            return response;
+            if (cacheValue.Miss)
+            {
+                var response = await next(Type);
+                _cache.SetToCache(request, response);
+                return response;
+            }
+
+            _metricProvider
+                .AddMetric(
+                    MetricFactory
+                        .CreateCounter(request.Name, request.HttpRequest, Metrics.CacheHit, string.Empty));
+
+            _logger.LogInformation("Data was read from cache", DateTimeOffset.UtcNow);
+            return cacheValue.Data;
         }
 
-        private void SetToCache(FinityHttpRequestMessage request, HttpResponseMessage response)
-        {
-            if (!response.IsSuccessStatusCode) return;
+        public Type Type { get; set; } = typeof(MemoryCacheMiddleware);
 
-            var cacheConfigure = _options.Get(request.Name);
-
-            if (request.HttpRequest.RequestUri is not null)
-                _cache.Set(CacheKey.GetKey(request.HttpRequest.RequestUri.ToString()), response,
-                    cacheConfigure.AbsoluteExpirationRelativeToNow);
-        }
-
-        private CacheResult<HttpResponseMessage> GetFromCache(string cacheKey)
-        {
-            var data = _cache.Get<HttpResponseMessage>(cacheKey);
-            return new CacheResult<HttpResponseMessage>(data);
-        }
-
-        public Type MiddlewareType { get; set; }
-            = typeof(MemoryCacheMiddleware);
     }
 }

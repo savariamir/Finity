@@ -4,7 +4,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{59B4A79D-9A0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D86F9299-2483-4504-B99D-5723F74ACA66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Tests.Unit", "tests\Finity.Tests.Unit\Finity.Tests.Unit.csproj", "{42E5DD66-2BC8-476C-953D-0FBBF1A0A25E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity.Tests", "tests\Finity.Tests\Finity.Tests.csproj", "{42E5DD66-2BC8-476C-953D-0FBBF1A0A25E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Finity", "src\Finity\Finity.csproj", "{AFE93EDF-FC06-4B75-BE96-7EC80FC49F00}"
 EndProject

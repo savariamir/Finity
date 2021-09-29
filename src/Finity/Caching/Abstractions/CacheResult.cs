@@ -10,5 +10,6 @@ namespace Finity.Caching.Abstractions
         public T Data { get; }
 
         public bool Hit => Data is not null;
+        public bool Miss => Data is null;
     }
 }

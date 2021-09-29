@@ -29,10 +29,10 @@ namespace Finity.Authentication
             request.HttpRequest.Headers.Authorization = 
                 new AuthenticationHeaderValue("Bearer", token);
 
-            return await next(MiddlewareType);
+            return await next(Type);
         }
         
-        public Type MiddlewareType { get; set; } 
+        public Type Type { get; set; } 
             = typeof(AuthenticationMiddleware);
     }
 }

@@ -28,7 +28,7 @@ namespace Finity.CircuitBreaker.Internals
             return await _engine.ExecuteAsync(request, next);
         }
 
-        public Type MiddlewareType { get; set; } =
+        public Type Type { get; set; } =
             typeof(CircuitBreakerMiddleware);
     }
 }

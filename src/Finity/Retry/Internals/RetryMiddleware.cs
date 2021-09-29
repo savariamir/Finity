@@ -8,8 +8,6 @@ using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Retry.Configurations;
 using Finity.Retry.Exceptions;
-using Finity.Shared;
-using Finity.Shared.Metrics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -48,7 +46,7 @@ namespace Finity.Retry.Internals
 
         private async Task<HttpResponseMessage> ExecuteFirstTryAsync(Func<Type, Task<HttpResponseMessage>> next)
         {
-            var response = await next(MiddlewareType);
+            var response = await next(Type);
             return response;
         }
 
@@ -60,7 +58,7 @@ namespace Finity.Retry.Internals
             var retryConfigure = _options.Get(request.Name);
             for (var i = 0; i < retryConfigure.RetryCount; i++)
             {
-                var response = await next(MiddlewareType);
+                var response = await next(Type);
                 if (response.IsSuccessful())
                 {
                     //Report Metrics for next tries
@@ -76,7 +74,7 @@ namespace Finity.Retry.Internals
             throw new RetryOutOfRangeException($"Fails after {retryConfigure.RetryCount} tries");
         }
 
-        public Type MiddlewareType { get; set; }
+        public Type Type { get; set; }
             = typeof(RetryMiddleware);
     }
 }

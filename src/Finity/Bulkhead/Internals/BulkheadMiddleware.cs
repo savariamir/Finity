@@ -29,11 +29,11 @@ namespace Finity.Bulkhead.Internals
                 .TrySemaphore(request.Name)
                 .EnterAsync(cancellationToken))
             {
-                return await next(MiddlewareType);
+                return await next(Type);
             }
         }
 
-        public Type MiddlewareType { get; set; }
+        public Type Type { get; set; }
             = typeof(BulkheadMiddleware);
     }
 }
