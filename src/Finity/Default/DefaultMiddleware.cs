@@ -22,7 +22,6 @@ namespace Finity.Default
             FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var response = await _metricProxy.ExecuteAsync(request);

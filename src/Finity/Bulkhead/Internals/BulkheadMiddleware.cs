@@ -6,10 +6,9 @@ using Finity.Bulkhead.Abstractions;
 using Finity.Locking;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
-using Finity.Shared;
 using Finity.Shared.Metrics;
 
-namespace Finity.Bulkhead.Internal
+namespace Finity.Bulkhead.Internals
 {
     public class BulkheadMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
@@ -24,7 +23,6 @@ namespace Finity.Bulkhead.Internal
             FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             using (await _bulkheadLockProvider

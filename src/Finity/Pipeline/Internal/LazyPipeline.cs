@@ -56,7 +56,7 @@ namespace Finity.Pipeline.Internal
                     throw new MiddlewareNotResolvedException(middlewareType);
                 }
 
-                return middleware.ExecuteAsync(request, context, Next, _setMetric, cancellationToken);
+                return middleware.ExecuteAsync(request, context, Next, cancellationToken);
             }
 
             return Next(null);

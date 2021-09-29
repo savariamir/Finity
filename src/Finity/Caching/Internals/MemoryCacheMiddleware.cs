@@ -19,20 +19,21 @@ namespace Finity.Caching.Internals
         private readonly IMemoryCache _cache;
         private readonly IOptionsSnapshot<CacheConfigure> _options;
         private readonly ILogger<MemoryCacheMiddleware> _logger;
+        private readonly IMetricProvider _metricProvider;
 
         public MemoryCacheMiddleware(IMemoryCache cache, IOptionsSnapshot<CacheConfigure> options,
-            ILogger<MemoryCacheMiddleware> logger)
+            ILogger<MemoryCacheMiddleware> logger, IMetricProvider metricProvider)
         {
             _cache = cache;
             _options = options;
             _logger = logger;
+            _metricProvider = metricProvider;
         }
 
         public async Task<HttpResponseMessage> ExecuteAsync(
             FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             if (request.HttpRequest.RequestUri is null) throw new Exception("Request uri is not allowed to be empty");
@@ -47,6 +48,10 @@ namespace Finity.Caching.Internals
             if (cacheValue.Hit)
             {
                 //Report that cache hits
+                _metricProvider.AddMetric(MetricFactory.CreateCounter(
+                    request.Name,
+                    request.HttpRequest, 
+                    Metrics.CacheHit,string.Empty));
                 _logger.LogInformation("Data was read from cache", DateTimeOffset.UtcNow);
                 return cacheValue.Data;
             }

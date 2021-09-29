@@ -11,7 +11,6 @@ namespace Finity.Pipeline.Abstractions
         Task<TResponse> ExecuteAsync(TRequest request,
             IPipelineContext context,
             Func<Type,Task<TResponse>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken);
 
         Type MiddlewareType {  set; get; }

@@ -11,6 +11,6 @@ namespace Finity.CircuitBreaker.Abstractions
         Task<HttpResponseMessage> ExecuteAsync(
             FinityHttpRequestMessage request,
             Func<Type,Task<HttpResponseMessage>> next
-            ,Action<MetricValue> setMetric);
+            );
     }
 }

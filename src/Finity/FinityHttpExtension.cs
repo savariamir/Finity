@@ -6,6 +6,7 @@ using Finity.Bulkhead;
 using Finity.Bulkhead.Configurations;
 using Finity.Bulkhead.Extensions;
 using Finity.Bulkhead.Internal;
+using Finity.Bulkhead.Internals;
 using Finity.Caching;
 using Finity.Caching.Configurations;
 using Finity.Caching.Extenstions;
@@ -93,7 +94,9 @@ namespace Finity
 
             Action<MetricValue> setMetric = (_) => { };
             var metric = setMetric;
-            builder.Services.AddTransient<IMetricProxy>(_ => new MetricProxy(metric));
+            builder.Services.AddTransient<IMetricProvider>(_ => new MetricProvider(metric));
+
+            builder.Services.AddTransient<IMetricProxy, MetricProxy>();
 
 
             if (setInputMetric is not null)
@@ -104,7 +107,7 @@ namespace Finity
             if (_setGlobalMetric is not null)
             {
                 setMetric = _setGlobalMetric;
-                builder.Services.AddTransient<IMetricProxy>(sp => new MetricProxy(_setGlobalMetric));
+                builder.Services.AddTransient<IMetricProvider>(_ => new MetricProvider(_setGlobalMetric));
             }
 
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,

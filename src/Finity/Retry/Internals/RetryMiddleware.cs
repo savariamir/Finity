@@ -32,13 +32,12 @@ namespace Finity.Retry.Internals
             FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var firstResponse = await ExecuteFirstTryAsync(next);
             if (!firstResponse.IsSuccessful())
             {
-                return await ExecuteNextTriesAsync(request, next, setMetric,cancellationToken);
+                return await ExecuteNextTriesAsync(request, next,cancellationToken);
             }
 
             //Report Metrics for the first try
@@ -56,7 +55,6 @@ namespace Finity.Retry.Internals
         private async Task<HttpResponseMessage> ExecuteNextTriesAsync(
             FinityHttpRequestMessage request,
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var retryConfigure = _options.Get(request.Name);

@@ -12,5 +12,6 @@ namespace Finity.Shared.Metrics
         public static readonly string FirstTryCount = $"{Suffix}first_try_count";
         public static readonly string NextTryCount = $"{Suffix}next_try_count";
         public static readonly string LastExecution = $"{Suffix}last_execution";
+        public static readonly string CacheHit = $"{Suffix}total_number_of_cache_hits";
     }
 }

@@ -23,10 +23,9 @@ namespace Finity.CircuitBreaker.Internals
             FinityHttpRequestMessage request,
             IPipelineContext context,
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
-            return await _engine.ExecuteAsync(request, next,setMetric);
+            return await _engine.ExecuteAsync(request, next);
         }
 
         public Type MiddlewareType { get; set; } =

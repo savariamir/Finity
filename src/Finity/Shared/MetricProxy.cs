@@ -10,11 +10,11 @@ namespace Finity.Shared
     public class MetricProxy : IMetricProxy
     {
         private Stopwatch _stopwatch;
-        private readonly Action<MetricValue> _action;
+        private readonly IMetricProvider _metricProvider;
 
-        public MetricProxy(Action<MetricValue> action)
+        public MetricProxy(IMetricProvider metricProvider)
         {
-            _action = action;
+            _metricProvider = metricProvider;
         }
 
         protected virtual void Before()
@@ -35,21 +35,21 @@ namespace Finity.Shared
         {
             _stopwatch.Stop();
 
-            _action(MetricFactory.CreateGaugeAverageExecutionValue(
+            _metricProvider.AddMetric(MetricFactory.CreateGaugeAverageExecutionValue(
                 request.Name,
                 request.HttpRequest,
                 Metrics.Metrics.AverageExecutionTimeMilliseconds,
                 string.Empty,
                 _stopwatch.Elapsed.Milliseconds));
 
-            _action(MetricFactory.CreateCounter(
+            _metricProvider.AddMetric(MetricFactory.CreateCounter(
                 request.Name,
                 request.HttpRequest,
                 Metrics.Metrics.TotalNumberOfExecutions,
                 string.Empty));
 
 
-            _action(MetricFactory.CreateGaugeLastExecutionValue(
+            _metricProvider.AddMetric(MetricFactory.CreateGaugeLastExecutionValue(
                 request.Name,
                 request.HttpRequest,
                 Metrics.Metrics.LastExecution,

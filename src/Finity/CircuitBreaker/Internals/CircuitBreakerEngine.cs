@@ -43,12 +43,11 @@ namespace Finity.CircuitBreaker.Internals
 
         public async Task<HttpResponseMessage> ExecuteAsync(
             FinityHttpRequestMessage request,
-            Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric)
+            Func<Type, Task<HttpResponseMessage>> next)
         {
             if (IsCircuitClosed(request.Name))
             {
-                return await PassRequest(next, setMetric, request.Name);
+                return await PassRequest(next, request.Name);
             }
 
             //Report that circuit is open
@@ -104,7 +103,6 @@ namespace Finity.CircuitBreaker.Internals
 
         private async Task<HttpResponseMessage> PassRequest(
             Func<Type, Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             string name)
         {
             var response = await next(typeof(CircuitBreakerMiddleware));

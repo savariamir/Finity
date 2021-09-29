@@ -23,7 +23,6 @@ namespace Finity.Authentication
             FinityHttpRequestMessage request, 
             IPipelineContext context,
             Func<Type,Task<HttpResponseMessage>> next,
-            Action<MetricValue> setMetric,
             CancellationToken cancellationToken)
         {
             var token = await _tokenProvider.GetToken(request.Name, cancellationToken);
