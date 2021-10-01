@@ -1,6 +1,6 @@
 namespace Finity.Caching.Abstractions
 {
-    internal class CacheResult<T>
+    public class CacheResult<T>
     {
         public CacheResult(T data)
         {

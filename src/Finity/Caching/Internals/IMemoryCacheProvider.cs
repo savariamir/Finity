@@ -7,12 +7,6 @@ using Microsoft.Extensions.Options;
 
 namespace Finity.Caching.Internals
 {
-    internal interface IMemoryCacheProvider
-    {
-        void SetToCache(FinityHttpRequestMessage request, HttpResponseMessage response);
-        CacheResult<HttpResponseMessage> GetFromCache(string requestUri);
-    }
-
     internal class MemoryCacheProvider : IMemoryCacheProvider
     {
         private readonly IMemoryCache _cache;

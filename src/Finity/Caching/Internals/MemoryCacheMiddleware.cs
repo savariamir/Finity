@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Caching.Abstractions;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Shared;
@@ -10,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Finity.Caching.Internals
 {
-    internal class MemoryCacheMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
+    public class MemoryCacheMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {
         private readonly IMemoryCacheProvider _cache;
         private readonly ILogger<MemoryCacheMiddleware> _logger;
