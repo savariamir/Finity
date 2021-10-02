@@ -8,6 +8,7 @@ using Finity.Pipeline.Internal;
 using Finity.Request;
 using Finity.Shared;
 using Finity.Shared.Metrics;
+using Finity.Tests.Fakes;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -32,13 +33,13 @@ namespace Finity.Tests.Cache
                 Name = "finity",
                 HttpRequest = new HttpRequestMessage(HttpMethod.Post, "test.com")
             };
-            var nextMock = new NextMock();
+            var nextMock = new FakeNextMiddleware();
             
             //Act
-            await middleware.ExecuteAsync(request, context, nextMock.Next, cancellationToken);
+            await middleware.ExecuteAsync(request, context, nextMock.SuccessNext, cancellationToken);
 
             //Assert
-            nextMock.CallsCount.Should().Be(1);
+            nextMock.SuccessCallsCount.Should().Be(1);
         }
 
         [Fact]
@@ -58,13 +59,13 @@ namespace Finity.Tests.Cache
                 Name = "finity",
                 HttpRequest = new HttpRequestMessage(HttpMethod.Get, "test.com")
             };
-            var nextMock = new NextMock();
+            var nextMock = new FakeNextMiddleware();
 
             //Act
-            var response = await middleware.ExecuteAsync(request, context, nextMock.Next, cancellationToken);
+            var response = await middleware.ExecuteAsync(request, context, nextMock.SuccessNext, cancellationToken);
 
             //Assert
-            nextMock.CallsCount.Should().Be(1);
+            nextMock.SuccessCallsCount.Should().Be(1);
             response.Should().BeEquivalentTo(new HttpResponseMessage(HttpStatusCode.OK));
             cacheProvider.Received(1).SetToCache(request, nextMock.Response);
         }
@@ -88,13 +89,13 @@ namespace Finity.Tests.Cache
                 Name = "finity",
                 HttpRequest = new HttpRequestMessage(HttpMethod.Get, "test.com")
             };
-            var nextMock = new NextMock();
+            var nextMock = new FakeNextMiddleware();
 
             //Act
-            var response = await middleware.ExecuteAsync(request, context, nextMock.Next, cancellationToken);
+            var response = await middleware.ExecuteAsync(request, context, nextMock.SuccessNext, cancellationToken);
 
             //Assert
-            nextMock.CallsCount.Should().Be(0);
+            nextMock.SuccessCallsCount.Should().Be(0);
             response.Should().BeEquivalentTo(new HttpResponseMessage(HttpStatusCode.OK));
             cacheProvider.Received(0).SetToCache(request, nextMock.Response);
         }
@@ -117,10 +118,10 @@ namespace Finity.Tests.Cache
                 Name = "finity",
                 HttpRequest = new HttpRequestMessage(HttpMethod.Get, "test.com")
             };
-            var nextMock = new NextMock();
+            var nextMock = new FakeNextMiddleware();
 
             //Act
-             await middleware.ExecuteAsync(request, context, nextMock.Next, cancellationToken);
+             await middleware.ExecuteAsync(request, context, nextMock.SuccessNext, cancellationToken);
 
              //Assert
             metricProvider.Received(1).AddMetric(Arg.Any<CounterValue>());

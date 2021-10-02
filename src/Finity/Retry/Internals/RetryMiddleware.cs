@@ -8,6 +8,8 @@ using Finity.Pipeline.Abstractions;
 using Finity.Request;
 using Finity.Retry.Configurations;
 using Finity.Retry.Exceptions;
+using Finity.Shared;
+using Finity.Shared.Metrics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -18,12 +20,15 @@ namespace Finity.Retry.Internals
         private readonly IClock _clock;
         private readonly IOptionsSnapshot<RetryConfigure> _options;
         private readonly ILogger<RetryMiddleware> _logger;
+        private readonly IMetricProvider _metricProvider;
 
-        public RetryMiddleware(IClock clock, IOptionsSnapshot<RetryConfigure> options, ILogger<RetryMiddleware> logger)
+        public RetryMiddleware(IClock clock, IOptionsSnapshot<RetryConfigure> options, ILogger<RetryMiddleware> logger,
+            IMetricProvider metricProvider)
         {
             _clock = clock;
             _options = options;
             _logger = logger;
+            _metricProvider = metricProvider;
         }
 
         public async Task<HttpResponseMessage> ExecuteAsync(
@@ -32,16 +37,17 @@ namespace Finity.Retry.Internals
             Func<Type, Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
-            var firstResponse = await ExecuteFirstTryAsync(next);
-            if (!firstResponse.IsSuccessful())
+            var firstTry = await ExecuteFirstTryAsync(next);
+            if (!firstTry.IsSuccessful())
             {
-                return await ExecuteNextTriesAsync(request, next,cancellationToken);
+                return await ExecuteNextTriesAsync(request, next, cancellationToken);
             }
-
-            //Report Metrics for the first try
-            // setMetric(new CounterValue());
-            // Metrics.Increment(Metrics.FirstTryCount);
-            return firstResponse;
+            
+            _logger.LogInformation($"Succeeded after first try");
+            _metricProvider.AddMetric(MetricFactory.CreateCounter(request.Name, request.HttpRequest,
+                Metrics.FirstTryCount, string.Empty));
+            
+            return firstTry;
         }
 
         private async Task<HttpResponseMessage> ExecuteFirstTryAsync(Func<Type, Task<HttpResponseMessage>> next)
@@ -61,9 +67,9 @@ namespace Finity.Retry.Internals
                 var response = await next(Type);
                 if (response.IsSuccessful())
                 {
-                    //Report Metrics for next tries
                     _logger.LogInformation($"Succeeded after {i + 2} tries");
-                    // setMetric(new CounterValue());
+                    _metricProvider.AddMetric(MetricFactory.CreateCounter(request.Name, request.HttpRequest,
+                        Metrics.NextTryCount, string.Empty));
                     return response;
                 }
 
