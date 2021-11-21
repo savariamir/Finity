@@ -9,7 +9,7 @@ using Finity.Bulkhead.Internal;
 using Finity.Bulkhead.Internals;
 using Finity.Caching;
 using Finity.Caching.Configurations;
-using Finity.Caching.Extenstions;
+using Finity.Caching.Extensions;
 using Finity.Caching.Internals;
 using Finity.CircuitBreaker.Configurations;
 using Finity.CircuitBreaker.Extensions;
