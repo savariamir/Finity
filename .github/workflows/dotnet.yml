@@ -1,4 +1,4 @@
-name: .NET 5 CI
+name: .NET 7 CI
 
 on:
   push:
