@@ -22,14 +22,14 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish Finity
-        uses: brandedoutcast/publish-nuget@v2.5.5
+        uses: actions/checkout@v2
         with:
           PROJECT_FILE_PATH: src/Finity/Finity.csproj
           NUGET_KEY: ${{secrets.Nuget_API_Key}}
           NUGET_SOURCE: https://api.nuget.org
           
       - name: Publish Finity.Prometheus
-        uses: brandedoutcast/publish-nuget@v2.5.5
+        uses: actions/checkout@v2
         with:
          PROJECT_FILE_PATH: src/Finity.Prometheus/Finity.Prometheus.csproj
          NUGET_KEY: ${{secrets.Nuget_API_Key}}
