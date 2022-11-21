@@ -3,12 +3,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Finity.Authentication.Abstractions;
 using Finity.Pipeline.Abstractions;
 using Finity.Request;
-using Finity.Shared;
-using Finity.Shared.Metrics;
 
-namespace Finity.Authentication
+namespace Finity.Authentication.Internals
 {
     public class AuthenticationMiddleware : IMiddleware<FinityHttpRequestMessage, HttpResponseMessage>
     {

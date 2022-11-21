@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using Finity.Bulkhead.Abstractions;
 
-namespace Finity.Bulkhead.Internal
+namespace Finity.Bulkhead.Internals
 {
     public class BulkheadLockProvider : IBulkheadLockProvider
     {

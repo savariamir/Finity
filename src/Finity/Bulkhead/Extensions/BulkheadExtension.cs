@@ -1,7 +1,6 @@
 using System;
 using Finity.Bulkhead.Abstractions;
 using Finity.Bulkhead.Configurations;
-using Finity.Bulkhead.Internal;
 using Finity.Bulkhead.Internals;
 using Finity.Pipeline;
 using Microsoft.Extensions.DependencyInjection;

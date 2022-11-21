@@ -1,4 +1,4 @@
-namespace Finity.Authentication
+namespace Finity.Authentication.Configurations
 {
     internal static class CacheKey
     {

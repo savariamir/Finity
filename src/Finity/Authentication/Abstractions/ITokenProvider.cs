@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Finity.Authentication
+namespace Finity.Authentication.Abstractions
 {
     public interface ITokenProvider
     {

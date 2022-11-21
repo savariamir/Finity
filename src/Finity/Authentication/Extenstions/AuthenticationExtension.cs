@@ -1,8 +1,11 @@
 using System;
+using Finity.Authentication.Abstractions;
+using Finity.Authentication.Configurations;
+using Finity.Authentication.Internals;
 using Finity.Pipeline;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Finity.Authentication
+namespace Finity.Authentication.Extenstions
 {
     public static class AuthenticationExtension
     {
@@ -20,6 +23,7 @@ namespace Finity.Authentication
                 throw new ArgumentNullException(nameof(configure));
             }
 
+            builder.Services.AddTransient<ITokenProvider, TokenProvider>();
             builder.Services.AddTransient<AuthenticationMiddleware>();
             builder.Services.Configure<AnshanFactoryOptions>(builder.Name,
                 options => options.Types.Add(typeof(AuthenticationMiddleware)));

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Prometheus;
 
@@ -41,25 +40,30 @@ namespace Finity.Sample
                     a.ExceptionsAllowedBeforeBreaking = 2;
                     a.SuccessAllowedBeforeClosing = 1;
                 })
+                .WithAuthentication(a =>
+                {
+                    a.Endpoint = "https://localhost:5001/connect/token";
+                    a.ClientId = "back-end-client";
+                    a.Scope = "m2m";
+                    a.ClientSecret = "secret";
+                    a.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+                })
                 .WithPrometheus();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Finity.Sample v1"));
-            }
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Finity.Sample v1"));
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseHttpMetrics();
+            // app.UseHttpMetrics();
 
-            app.UseAuthorization();
+            // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
