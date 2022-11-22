@@ -22,7 +22,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish Finity
-        uses: actions/checkout@v3 
+        uses: brandedoutcast/publish-nuget@v2.5.5
         with:
           PROJECT_FILE_PATH: src/Finity/Finity.csproj
           NUGET_KEY: ${{secrets.Nuget_API_Key}}
