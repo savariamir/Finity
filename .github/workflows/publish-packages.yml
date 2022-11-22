@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 7.0.x
           
@@ -22,8 +22,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish Finity
-        uses: actions/upload-artifact@v3
+        uses: brandedoutcast/publish-nuget@v2.5.5
         with:
           PROJECT_FILE_PATH: src/Finity/Finity.csproj
           NUGET_KEY: ${{secrets.Nuget_API_Key}}
-          NUGET_SOURCE: https://api.nuget.org
+          NUGET_SOURCE: https://api.nuget.org/v3/index.json
