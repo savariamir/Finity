@@ -27,14 +27,21 @@ namespace Finity.Authentication.Internals
             _httpClient = clientFactory.CreateClient("finity-auth");
         }
 
-        public async Task<string> GetToken(string name, CancellationToken cancellationToken = default)
+        public async Task<string> GetTokenAsync(string name, CancellationToken cancellationToken = default)
         {
             var cacheResult = GetFromCache(name);
             if (cacheResult.Hit)
                 return cacheResult.Data;
 
             var token = await RequestTokenAsync(name, cancellationToken);
+            SetToCache(token, name);
 
+            return token;
+        }
+
+        public async Task<string> GetNewTokenAsync(string name, CancellationToken cancellationToken)
+        {
+            var token = await RequestTokenAsync(name, cancellationToken);
             SetToCache(token, name);
 
             return token;

@@ -72,7 +72,7 @@ namespace Finity.Tests.Retry
         }
         
         [Fact]
-        public async Task Should_retry_after_failing_the_first_try_and_throw_Exception()
+        public Task Should_retry_after_failing_the_first_try_and_throw_Exception()
         {
             //Arrange
             var logger = Substitute.For<ILogger<RetryMiddleware>>();
@@ -91,11 +91,12 @@ namespace Finity.Tests.Retry
             var nextMock = new FakeNextMiddleware();
             
             //Act
-           Func<Task<HttpResponseMessage>> act= async () => await middleware.ExecuteAsync(request, context, nextMock.FailureNext, cancellationToken);
+           var act= async () => await middleware.ExecuteAsync(request, context, nextMock.FailureNext, cancellationToken);
 
            act.Should().Throw<RetryOutOfRangeException>();
             //Assert
             nextMock.FailureCallsCount.Should().Be(6);
+            return Task.CompletedTask;
         }
         
         [Fact]

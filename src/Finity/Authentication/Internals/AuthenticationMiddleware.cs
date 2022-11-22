@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -18,20 +19,29 @@ namespace Finity.Authentication.Internals
             _tokenProvider = tokenProvider;
         }
 
-        public async Task<HttpResponseMessage> ExecuteAsync(
-            FinityHttpRequestMessage request, 
+        public async Task<HttpResponseMessage> ExecuteAsync(FinityHttpRequestMessage request,
             IPipelineContext context,
-            Func<Type,Task<HttpResponseMessage>> next,
+            Func<Type, Task<HttpResponseMessage>> next,
             CancellationToken cancellationToken)
         {
-            var token = await _tokenProvider.GetToken(request.Name, cancellationToken);
-            request.HttpRequest.Headers.Authorization = 
+            var token = await _tokenProvider.GetTokenAsync(request.Name, cancellationToken);
+            request.HttpRequest.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
-            return await next(Type);
+            var response = await next(Type);
+            if (response.StatusCode != HttpStatusCode.Unauthorized)
+            {
+                return response;
+            }
+
+            token = await _tokenProvider.GetNewTokenAsync(request.Name, cancellationToken);
+            request.HttpRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            response = await next(Type);
+            
+            return response;
         }
-        
-        public Type Type { get; set; } 
+
+        public Type Type { get; set; }
             = typeof(AuthenticationMiddleware);
     }
 }

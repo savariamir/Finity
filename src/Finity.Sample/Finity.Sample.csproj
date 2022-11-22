@@ -12,6 +12,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Finity.Prometheus\Finity.Prometheus.csproj" />
+      <ProjectReference Include="..\Finity\Finity.csproj" />
     </ItemGroup>
 </Project>
