@@ -19,6 +19,6 @@ jobs:
         with:
           dotnet-version: '7.0.x'
       - name: Publish the package to nuget.org
-        run: dotnet nuget push **/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push **/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json --skip-duplicate
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.Nuget_API_Key }}
