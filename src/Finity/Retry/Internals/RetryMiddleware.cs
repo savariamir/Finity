@@ -62,9 +62,11 @@ namespace Finity.Retry.Internals
             CancellationToken cancellationToken)
         {
             var retryConfigure = _options.Get(request.Name);
+            HttpResponseMessage? response = default;
+            
             for (var i = 0; i < retryConfigure.RetryCount; i++)
             {
-                var response = await next(Type);
+                response = await next(Type);
                 if (response.IsSuccessful())
                 {
                     _logger.LogInformation($"Succeeded after {i + 2} tries");
@@ -77,7 +79,7 @@ namespace Finity.Retry.Internals
                     await _clock.SleepAsync(retryConfigure.SleepDurationRetry, cancellationToken);
             }
 
-            throw new RetryOutOfRangeException($"Fails after {retryConfigure.RetryCount} tries");
+            return response!;
         }
 
         public Type Type { get; set; }
