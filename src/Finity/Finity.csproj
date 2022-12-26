@@ -10,7 +10,7 @@
         <PackageProjectUrl>https://github.com/savariamir/Finity</PackageProjectUrl>
         <RepositoryUrl>https://github.com/savariamir/Finity</RepositoryUrl>
         <PackageTags>fault-tolerance</PackageTags>
-        <Version>0.5.1</Version>
+        <Version>0.5.2</Version>
     </PropertyGroup>
     
     <ItemGroup>
